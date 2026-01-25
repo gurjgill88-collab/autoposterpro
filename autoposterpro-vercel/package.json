@@ -1,0 +1,8 @@
+{
+  "name": "autoposterpro-website",
+  "version": "1.0.0",
+  "description": "AutoPosterPro - Post Smarter. Sell Faster.",
+  "scripts": {
+    "start": "serve public"
+  }
+}
