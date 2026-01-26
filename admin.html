@@ -218,6 +218,7 @@
       <button class="tab-btn active" data-tab="licenses">📋 Licenses</button>
       <button class="tab-btn" data-tab="new-dealer">➕ New Dealer</button>
       <button class="tab-btn" data-tab="contacts">📧 Contacts</button>
+      <button class="tab-btn" data-tab="team">👥 Team</button>
     </div>
     
     <!-- Licenses Tab -->
@@ -374,6 +375,61 @@
         </table>
       </div>
     </div>
+    
+    <!-- Team Tab -->
+    <div class="tab-content" id="tab-team">
+      <div class="card">
+        <div class="card-title">➕ Add Team Member</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+          <div class="form-group" style="margin:0;">
+            <label>First Name</label>
+            <input type="text" id="teamFirstName" placeholder="John">
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Last Name</label>
+            <input type="text" id="teamLastName" placeholder="Smith">
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Email</label>
+            <input type="email" id="teamEmail" placeholder="john@autoposterpro.com">
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Password</label>
+            <input type="text" id="teamPassword" placeholder="Enter password">
+          </div>
+          <div class="form-group" style="margin:0;">
+            <label>Role</label>
+            <select id="teamRole">
+              <option value="sales">Sales Rep</option>
+              <option value="manager">Sales Manager</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0; display:flex; align-items:end;">
+            <button class="btn btn-success btn-full" onclick="createTeamUser()">Add Team Member</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="card" style="margin-top: 20px;">
+        <div class="card-title">👥 Team Members</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Last Login</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="teamBody">
+            <tr><td colspan="6" style="text-align:center; color:var(--text-dim);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
   
   <script>
@@ -405,6 +461,7 @@
           document.getElementById('loginForm').style.display = 'none';
           document.getElementById('dashboard').classList.add('show');
           fetchContacts();
+          fetchTeamUsers();
         } else {
           showLoginError('Invalid admin key');
         }
@@ -736,6 +793,158 @@
         }
       } catch (e) {
         showAlert('Error', 'error');
+      }
+    }
+    
+    // ============================================
+    // TEAM MANAGEMENT
+    // ============================================
+    
+    async function fetchTeamUsers() {
+      try {
+        const res = await fetch(`${API_BASE}/crm/users`, {
+          headers: { 'Authorization': `Bearer ${adminKey}` }
+        });
+        if (!res.ok) {
+          document.getElementById('teamBody').innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-dim);">Failed to load team members</td></tr>';
+          return;
+        }
+        const data = await res.json();
+        renderTeamUsers(data.users || []);
+      } catch (e) {
+        console.error(e);
+        document.getElementById('teamBody').innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-dim);">Error loading team</td></tr>';
+      }
+    }
+    
+    function renderTeamUsers(users) {
+      const tbody = document.getElementById('teamBody');
+      if (users.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-dim);">No team members yet. Add one above!</td></tr>';
+        return;
+      }
+      
+      tbody.innerHTML = users.map(user => {
+        const statusColor = user.status === 'active' ? 'var(--green)' : 'var(--red)';
+        const statusText = user.status === 'active' ? '🟢 Active' : '🔴 Disabled';
+        const lastLogin = user.lastLogin ? new Date(user.lastLogin).toLocaleDateString() + ' ' + new Date(user.lastLogin).toLocaleTimeString() : 'Never';
+        const roleDisplay = user.role === 'admin' ? '👑 Admin' : user.role === 'manager' ? '📊 Manager' : '💼 Sales';
+        
+        return `
+          <tr>
+            <td><strong>${user.firstName} ${user.lastName}</strong></td>
+            <td>${user.email}</td>
+            <td>${roleDisplay}</td>
+            <td style="color:${statusColor}">${statusText}</td>
+            <td style="font-size:12px; color:var(--text-dim);">${lastLogin}</td>
+            <td>
+              <button class="btn btn-small ${user.status === 'active' ? 'btn-danger' : 'btn-success'}" onclick="toggleUserStatus('${user.id}', '${user.status}')">
+                ${user.status === 'active' ? 'Disable' : 'Enable'}
+              </button>
+              <button class="btn btn-small btn-orange" onclick="resetUserPassword('${user.id}')">Reset PW</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+    
+    async function createTeamUser() {
+      const firstName = document.getElementById('teamFirstName').value.trim();
+      const lastName = document.getElementById('teamLastName').value.trim();
+      const email = document.getElementById('teamEmail').value.trim();
+      const password = document.getElementById('teamPassword').value;
+      const role = document.getElementById('teamRole').value;
+      
+      if (!firstName || !lastName || !email || !password) {
+        showAlert('Please fill in all fields', 'error');
+        return;
+      }
+      
+      try {
+        const res = await fetch(`${API_BASE}/crm/users`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminKey}`
+          },
+          body: JSON.stringify({ firstName, lastName, email, password, role })
+        });
+        
+        const data = await res.json();
+        
+        if (!res.ok) {
+          showAlert(data.error || 'Failed to create user', 'error');
+          return;
+        }
+        
+        showAlert(`Team member ${firstName} ${lastName} created!`, 'success');
+        
+        // Clear form
+        document.getElementById('teamFirstName').value = '';
+        document.getElementById('teamLastName').value = '';
+        document.getElementById('teamEmail').value = '';
+        document.getElementById('teamPassword').value = '';
+        document.getElementById('teamRole').value = 'sales';
+        
+        fetchTeamUsers();
+        
+      } catch (e) {
+        console.error(e);
+        showAlert('Error creating user', 'error');
+      }
+    }
+    
+    async function toggleUserStatus(userId, currentStatus) {
+      const newStatus = currentStatus === 'active' ? 'disabled' : 'active';
+      
+      try {
+        const res = await fetch(`${API_BASE}/crm/users`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminKey}`
+          },
+          body: JSON.stringify({ id: userId, status: newStatus })
+        });
+        
+        if (!res.ok) {
+          showAlert('Failed to update user', 'error');
+          return;
+        }
+        
+        showAlert(`User ${newStatus === 'active' ? 'enabled' : 'disabled'}`, 'success');
+        fetchTeamUsers();
+        
+      } catch (e) {
+        console.error(e);
+        showAlert('Error updating user', 'error');
+      }
+    }
+    
+    async function resetUserPassword(userId) {
+      const newPassword = prompt('Enter new password for this user:');
+      if (!newPassword) return;
+      
+      try {
+        const res = await fetch(`${API_BASE}/crm/users`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminKey}`
+          },
+          body: JSON.stringify({ id: userId, password: newPassword })
+        });
+        
+        if (!res.ok) {
+          showAlert('Failed to reset password', 'error');
+          return;
+        }
+        
+        showAlert('Password reset successfully!', 'success');
+        
+      } catch (e) {
+        console.error(e);
+        showAlert('Error resetting password', 'error');
       }
     }
     
