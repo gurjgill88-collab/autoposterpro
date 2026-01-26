@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/sales", "destination": "/sales.html" },
+    { "source": "/crm", "destination": "/sales.html" },
+    { "source": "/analytics", "destination": "/analytics.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/process-sequences",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}

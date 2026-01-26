@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoPosterPro Chat Widget</title>
+  <style>
+    /* Chat Widget Styles - Add these to any page */
+    .chat-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+    
+    .chat-toggle {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(124, 58, 237, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .chat-toggle:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 30px rgba(124, 58, 237, 0.5);
+    }
+    .chat-toggle svg {
+      width: 28px;
+      height: 28px;
+      fill: white;
+    }
+    .chat-toggle .close-icon { display: none; }
+    .chat-widget.open .chat-toggle .chat-icon { display: none; }
+    .chat-widget.open .chat-toggle .close-icon { display: block; }
+    
+    .chat-badge {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      background: #f97316;
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 10px;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+    .chat-widget.open .chat-badge { display: none; }
+    
+    .chat-window {
+      position: absolute;
+      bottom: 80px;
+      right: 0;
+      width: 380px;
+      height: 520px;
+      background: #0f0a1a;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid #2d2640;
+    }
+    .chat-widget.open .chat-window { display: flex; }
+    
+    @media (max-width: 500px) {
+      .chat-window {
+        width: calc(100vw - 40px);
+        height: 70vh;
+        right: -10px;
+      }
+    }
+    
+    .chat-header {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .chat-avatar {
+      width: 44px;
+      height: 44px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .chat-header-info h4 {
+      color: white;
+      font-size: 16px;
+      margin: 0 0 2px;
+    }
+    .chat-header-info p {
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      margin: 0;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #22c55e;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+      animation: blink 2s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .chat-messages::-webkit-scrollbar { width: 6px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb { background: #2d2640; border-radius: 3px; }
+    
+    .message {
+      max-width: 85%;
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      animation: fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .message.bot {
+      background: #1a1425;
+      color: #fff;
+      border-bottom-left-radius: 4px;
+      align-self: flex-start;
+    }
+    .message.user {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: white;
+      border-bottom-right-radius: 4px;
+      align-self: flex-end;
+    }
+    .message.bot .emoji {
+      font-size: 18px;
+    }
+    
+    .typing-indicator {
+      display: none;
+      align-self: flex-start;
+      padding: 12px 16px;
+      background: #1a1425;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+    }
+    .typing-indicator.show { display: flex; gap: 4px; }
+    .typing-indicator span {
+      width: 8px;
+      height: 8px;
+      background: #7c3aed;
+      border-radius: 50%;
+      animation: typing 1.4s infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 0 20px 15px;
+    }
+    .quick-reply {
+      background: transparent;
+      border: 1px solid #7c3aed;
+      color: #7c3aed;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .quick-reply:hover {
+      background: #7c3aed;
+      color: white;
+    }
+    
+    .chat-input-area {
+      padding: 16px;
+      border-top: 1px solid #2d2640;
+      display: flex;
+      gap: 10px;
+    }
+    .chat-input {
+      flex: 1;
+      background: #1a1425;
+      border: 1px solid #2d2640;
+      border-radius: 24px;
+      padding: 12px 18px;
+      color: white;
+      font-size: 14px;
+      outline: none;
+    }
+    .chat-input:focus { border-color: #7c3aed; }
+    .chat-input::placeholder { color: #6b7280; }
+    
+    .chat-send {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s;
+    }
+    .chat-send:hover { transform: scale(1.1); }
+    .chat-send svg { width: 20px; height: 20px; fill: white; }
+  </style>
+</head>
+<body>
+  
+  <!-- Chat Widget HTML - Add to any page -->
+  <div class="chat-widget" id="chatWidget">
+    <button class="chat-toggle" onclick="toggleChat()">
+      <span class="chat-badge">1</span>
+      <svg class="chat-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+      <svg class="close-icon" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+    </button>
+    
+    <div class="chat-window">
+      <div class="chat-header">
+        <div class="chat-avatar">🚗</div>
+        <div class="chat-header-info">
+          <h4>Vinny from AutoPosterPro</h4>
+          <p><span class="status-dot"></span>Online • Sales Rep of the Month</p>
+        </div>
+      </div>
+      
+      <div class="chat-messages" id="chatMessages">
+        <!-- Messages will be added here -->
+      </div>
+      
+      <div class="typing-indicator" id="typingIndicator">
+        <span></span><span></span><span></span>
+      </div>
+      
+      <div class="quick-replies" id="quickReplies">
+        <!-- Quick reply buttons -->
+      </div>
+      
+      <div class="chat-input-area">
+        <input type="text" class="chat-input" id="chatInput" placeholder="Type a message..." onkeypress="handleKeyPress(event)">
+        <button class="chat-send" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================
+    // VINNY THE CAR SALESMAN AI CHATBOT
+    // ============================================
+    
+    const VINNY_PERSONALITY = {
+      greetings: [
+        "Hey there, friend! 👋 Welcome to the lot! I'm Vinny, your personal AutoPosterPro specialist. What brings you in today - looking to move some metal faster?",
+        "Well well well, look who just pulled up! 🚗 I'm Vinny, and let me tell you, you've come to the RIGHT place. What can I do for ya?",
+        "Hey champ! 👊 Vinny here. I've been waiting for someone like you to walk through that door. Ready to sell more cars than you ever thought possible?",
+        "Welcome to AutoPosterPro, my friend! I'm Vinny - 15 years in the game, and THIS tool right here? It's the real deal. What's on your mind?"
+      ],
+      
+      pricingIntros: [
+        "Ah, pricing! Let me grab my rate card... 📋 *shuffles papers dramatically*",
+        "Now we're talking business! Let me break down the numbers for ya...",
+        "Alright, let's talk turkey! 🦃 Here's what we're working with..."
+      ],
+      
+      pricingResponse: `
+Okay, so here's the MSRP - that's Manufacturer's Suggested Retail Price for you newcomers 😉
+
+**🚀 Starter Package** - $219/month
+• 1 user license
+• AI-Powered Descriptions
+• Automated Image Transfer
+• Email Support
+
+**⚡ Professional Package** - $1,199/month  
+• 6-11 user licenses
+• Everything in Starter PLUS
+• Team Onboarding Session
+• Priority Support
+
+**🏢 Enterprise Package** - $1,799/month
+• 12-20 user licenses
+• The whole enchilada
+• Dedicated Account Manager
+• Custom Training
+
+Now, that's the sticker price... but between you and me? 🤫 **We've got some PROMOS running right now.** Let me go talk to my manager and see what I can do for ya. You seem like good people.
+
+What size dealership are we talking about here?
+      `,
+      
+      promoTalk: [
+        "Look, I'm gonna level with you - my manager's been on my case to hit quota this month. That works in YOUR favor, my friend! 💰",
+        "Between us? I can probably knock something off if we can shake hands today. My manager owes me one.",
+        "You caught me on a good day! We're running a special right now... let me see what kind of deal I can put together.",
+        "Alright, I just talked to my manager - good news! We can definitely work something out. What's your budget looking like?"
+      ],
+      
+      closingLines: [
+        "Look, I want to make this work. If I can sharpen my pencil on the setup fee, can we shake hands today? 🤝",
+        "Tell you what - let me see if I can get my manager to cut the setup cost in half. But I need a commitment today. We got a deal?",
+        "I'm gonna be straight with you - I can probably work some magic on the setup fee if we can close this out right now. What do you say?",
+        "Here's what I can do... if you're ready to pull the trigger today, I'll go to bat for you on the setup. Sound fair?",
+        "Between us? I've got some wiggle room on the setup costs. But my manager's only gonna approve it if I can close today. You in?",
+      ],
+      
+      objectionHandlers: {
+        tooExpensive: [
+          "I hear ya, I hear ya... but let me ask you this - how much time does your team spend posting cars manually? An hour per car? That's MONEY walking out the door, my friend!",
+          "Look, I get it - nobody likes spending money. But think of it as an investment! This thing pays for itself in the first week. Trust me on this one.",
+          "Expensive? Let me put it this way - you're not buying software, you're buying TIME. And time is money! How many more cars could you sell with an extra 3 hours a day?"
+        ],
+        needToThink: [
+          "Absolutely, take your time! But just so you know... this promo we're running? It's like a used car - might not be here tomorrow! 🚙",
+          "I respect that! A wise buyer does their research. But between us, my manager might pull this deal if I don't close something today...",
+          "Sure thing! But hey, what's holding you back? Maybe I can address some concerns right now?"
+        ],
+        notInterested: [
+          "No problem at all! But before you go - can I ask what you're currently using? Just curious! 🤔",
+          "Hey, I appreciate your honesty! But do me a favor - take my card. When you're spending hours posting cars manually, give ol' Vinny a call!",
+          "All good, friend! The door's always open. When your competitors start outselling you with this tool, you know where to find me! 😉"
+        ]
+      },
+      
+      carLingo: [
+        "This baby's got LOW MILES on the code! Fresh off the development lot!",
+        "We're not talking about some beater here - this is a PREMIUM product!",
+        "Let me pop the hood and show you what's under there... 🔧",
+        "This thing's cleaner than a dealer trade-in!",
+        "We're talking CHERRY condition software here!",
+        "It's got that new-feature smell! 👃",
+        "This model practically sells itself!",
+        "I've had three other dealers kicking the tires on this today!",
+        "What's it gonna take to get you into this software today?",
+        "Let me get you the keys so you can take it for a spin! 🔑"
+      ],
+      
+      randomFillers: [
+        "*adjusts tie* 👔",
+        "*takes sip of coffee* ☕",
+        "*leans in conspiratorially*",
+        "*checks over shoulder for manager*",
+        "*pulls out calculator dramatically* 🧮",
+        "*writes number on paper, slides it across*",
+        "*winks* 😉"
+      ],
+      
+      howItWorks: `
+Let me show you how this baby runs! 🚗💨
+
+**Step 1: Scrape** - Click one button on any car on your dealer website. BOOM - all the info gets pulled automatically. VIN decode, specs, photos, everything!
+
+**Step 2: AI Magic** - Our AI writes a UNIQUE description for every single car. No copy-paste, no shadowbans. Facebook thinks you typed it yourself!
+
+**Step 3: Post** - Hit that button and watch it fly! What used to take 15 minutes now takes 30 seconds. I timed it myself!
+
+*leans back in chair* 
+
+That's it! You'll be posting more cars before lunch than you used to post all week! I've seen dealers go from 5 posts a day to 50+. 
+
+Want me to walk you through a demo? I can show you exactly what I'm talking about! 🎬
+      `,
+      
+      features: `
+Oh man, where do I even start? This thing's fully loaded! 🎉
+
+✅ **AI-Powered Descriptions** - Unique write-ups for every car. The robots do the work so you don't have to!
+
+✅ **Automated Image Transfer** - All your photos zip right over. No downloading, no uploading, no headaches.
+
+✅ **Universal Scraper** - Works with ANY dealer website. DealerSocket, VinSolutions, whatever you got!
+
+✅ **One-Click Posting** - Literally one click. My grandma could do it. (Love ya, Nana! 👵)
+
+✅ **Shadowban Protection** - Our AI keeps your posts fresh so Facebook doesn't flag you.
+
+✅ **VIN Decode** - Pulls all the specs automatically. Year, make, model, trim, the works!
+
+It's like having a whole BDC department in a Chrome extension! 
+
+What feature's got your attention? 👀
+      `
+    };
+    
+    // State
+    let conversationHistory = [];
+    let hasSeenPricing = false;
+    let interactionCount = 0;
+    
+    // Helper functions
+    function randomFrom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+    
+    function toggleChat() {
+      document.getElementById('chatWidget').classList.toggle('open');
+      if (conversationHistory.length === 0) {
+        setTimeout(() => {
+          addBotMessage(randomFrom(VINNY_PERSONALITY.greetings));
+          showQuickReplies(['Tell me about pricing', 'How does it work?', 'What features?']);
+        }, 500);
+      }
+    }
+    
+    function addBotMessage(text) {
+      const messagesDiv = document.getElementById('chatMessages');
+      const messageEl = document.createElement('div');
+      messageEl.className = 'message bot';
+      messageEl.innerHTML = text.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/\*(.*?)\*/g, '<em>$1</em>');
+      messagesDiv.appendChild(messageEl);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      conversationHistory.push({ role: 'assistant', content: text });
+    }
+    
+    function addUserMessage(text) {
+      const messagesDiv = document.getElementById('chatMessages');
+      const messageEl = document.createElement('div');
+      messageEl.className = 'message user';
+      messageEl.textContent = text;
+      messagesDiv.appendChild(messageEl);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+      conversationHistory.push({ role: 'user', content: text });
+    }
+    
+    function showTyping() {
+      document.getElementById('typingIndicator').classList.add('show');
+      document.getElementById('chatMessages').scrollTop = document.getElementById('chatMessages').scrollHeight;
+    }
+    
+    function hideTyping() {
+      document.getElementById('typingIndicator').classList.remove('show');
+    }
+    
+    function showQuickReplies(replies) {
+      const container = document.getElementById('quickReplies');
+      container.innerHTML = replies.map(r => 
+        `<button class="quick-reply" onclick="handleQuickReply('${r}')">${r}</button>`
+      ).join('');
+    }
+    
+    function clearQuickReplies() {
+      document.getElementById('quickReplies').innerHTML = '';
+    }
+    
+    function handleQuickReply(text) {
+      clearQuickReplies();
+      addUserMessage(text);
+      processUserInput(text);
+    }
+    
+    function sendMessage() {
+      const input = document.getElementById('chatInput');
+      const text = input.value.trim();
+      if (!text) return;
+      
+      input.value = '';
+      clearQuickReplies();
+      addUserMessage(text);
+      processUserInput(text);
+    }
+    
+    function handleKeyPress(e) {
+      if (e.key === 'Enter') sendMessage();
+    }
+    
+    function processUserInput(text) {
+      interactionCount++;
+      const lower = text.toLowerCase();
+      
+      showTyping();
+      
+      // Determine response based on input
+      let response = '';
+      let quickReplies = [];
+      let delay = 1500 + Math.random() * 1000;
+      
+      // Pricing questions
+      if (lower.includes('price') || lower.includes('cost') || lower.includes('pricing') || lower.includes('how much')) {
+        hasSeenPricing = true;
+        response = randomFrom(VINNY_PERSONALITY.pricingIntros) + '\n\n' + VINNY_PERSONALITY.pricingResponse;
+        quickReplies = ["I'm a small dealer (1 user)", "Mid-size (6-11 users)", "Large dealership (12+)", "That's too expensive"];
+        delay = 2000;
+      }
+      // How it works
+      else if (lower.includes('how') && (lower.includes('work') || lower.includes('use'))) {
+        response = VINNY_PERSONALITY.howItWorks;
+        quickReplies = ['Show me the features', 'What about pricing?', 'Schedule a demo'];
+      }
+      // Features
+      else if (lower.includes('feature') || lower.includes('what can') || lower.includes('what does')) {
+        response = VINNY_PERSONALITY.features;
+        quickReplies = ['Tell me about pricing', 'How does it work?', 'I want to sign up!'];
+      }
+      // Too expensive objection
+      else if (lower.includes('expensive') || lower.includes('too much') || lower.includes('cheaper')) {
+        response = randomFrom(VINNY_PERSONALITY.objectionHandlers.tooExpensive) + '\n\n' + randomFrom(VINNY_PERSONALITY.carLingo);
+        quickReplies = ['What promos do you have?', 'I need to think about it', "Let's talk numbers"];
+      }
+      // Need to think
+      else if (lower.includes('think about') || lower.includes('not sure') || lower.includes('maybe later')) {
+        response = randomFrom(VINNY_PERSONALITY.objectionHandlers.needToThink);
+        quickReplies = ['What promos are running?', 'Tell me more about features', 'Okay, I\'m interested'];
+      }
+      // Promos
+      else if (lower.includes('promo') || lower.includes('deal') || lower.includes('discount') || lower.includes('special')) {
+        response = randomFrom(VINNY_PERSONALITY.promoTalk) + '\n\n' + randomFrom(VINNY_PERSONALITY.randomFillers) + '\n\n' + randomFrom(VINNY_PERSONALITY.closingLines);
+        quickReplies = ['What size are the promos?', 'Sign me up!', 'I need to talk to my team'];
+      }
+      // Ready to sign up
+      else if (lower.includes('sign up') || lower.includes('ready') || lower.includes('let\'s do') || lower.includes('interested') || lower.includes('deal')) {
+        response = "NOW we're talking! 🎉 " + randomFrom(VINNY_PERSONALITY.carLingo) + "\n\nAlright, let me see what I can do on the setup costs... *punches numbers into calculator* 🧮\n\nIf I can get my manager to give you a better deal on the setup, can we shake hands right now? 🤝\n\n👉 **[Let's make it official!](/pricing)**\n\nOr tell me what you need to make this happen today!";
+        quickReplies = ['Take me to pricing', 'What about setup costs?', 'I have more questions'];
+      }
+      // Demo request
+      else if (lower.includes('demo') || lower.includes('show me') || lower.includes('see it')) {
+        response = "A demo! Smart move, I like it! 🧠 Kick the tires before you buy - that's what I always say!\n\nTell you what - shoot us your info through the contact form and we'll set up a screen share. I'll personally walk you through the whole thing. You'll be posting cars like a pro in 15 minutes!\n\n👉 **[Schedule a Demo](/contact)**\n\nOr just tell me what you want to see and I'll explain it right here!";
+        quickReplies = ['Contact form', 'Explain the posting process', 'Show me features'];
+      }
+      // Small dealer
+      else if (lower.includes('small') || lower.includes('1 user') || lower.includes('just me') || lower.includes('one user')) {
+        response = "A solo operation! I respect the hustle! 💪\n\nThe **Starter package at $219/month** is PERFECT for you. One license, all the features, no fluff.\n\n" + randomFrom(VINNY_PERSONALITY.promoTalk) + "\n\nAt that price, if you sell just ONE extra car a month because of the time you save... it's already paid for itself 10 times over! What do you say?";
+        quickReplies = ['Sign me up!', 'What promos are available?', 'I need to think about it'];
+      }
+      // Mid-size dealer
+      else if (lower.includes('mid') || lower.includes('6-11') || lower.includes('medium') || lower.includes('few users')) {
+        response = "A mid-size operation - the sweet spot! 🎯\n\nThe **Professional package at $1,199/month** gets you 6-11 licenses. Your whole sales floor can be posting at once!\n\n" + randomFrom(VINNY_PERSONALITY.promoTalk) + "\n\nPlus you get team onboarding - I'll train your whole crew personally. They'll be posting machines! 🤖";
+        quickReplies = ['Let\'s do it!', 'Any current promos?', 'Can we do a team demo?'];
+      }
+      // Large dealer
+      else if (lower.includes('large') || lower.includes('12') || lower.includes('20') || lower.includes('big') || lower.includes('enterprise')) {
+        response = "A BIG operation! Now we're cooking with gas! 🔥\n\nThe **Enterprise package at $1,799/month** is built for dealerships like yours. Up to 20 users, dedicated account manager, the whole nine yards!\n\n" + randomFrom(VINNY_PERSONALITY.promoTalk) + "\n\nFor a dealer your size, we should probably get on a call. I can put together a custom package that'll knock your socks off! 🧦";
+        quickReplies = ['Schedule a call', 'What promos for Enterprise?', 'Tell me more'];
+      }
+      // Greeting
+      else if (lower.includes('hi') || lower.includes('hello') || lower.includes('hey') || lower.match(/^(yo|sup|what'?s up)/)) {
+        response = randomFrom(VINNY_PERSONALITY.greetings);
+        quickReplies = ['Tell me about pricing', 'How does it work?', 'What features?'];
+      }
+      // Contact/call
+      else if (lower.includes('contact') || lower.includes('call') || lower.includes('email') || lower.includes('phone')) {
+        response = "You want to talk to a real human? I'm slightly offended... just kidding! 😂\n\nHere's how to reach us:\n\n📧 **Email:** support@autoposterpro.com\n📝 **Contact Form:** [Click here](/contact)\n\nOr just tell me what you need and I'll do my best to help you right here! What's on your mind?";
+        quickReplies = ['Go to contact form', 'Tell me about pricing', 'I have a question'];
+      }
+      // Fallback - use AI personality
+      else {
+        const fillers = [
+          randomFrom(VINNY_PERSONALITY.randomFillers),
+          randomFrom(VINNY_PERSONALITY.carLingo)
+        ];
+        response = fillers.join(' ') + "\n\nThat's a great question! Let me help you out. Are you looking for info on:\n\n• **Pricing** - what it costs\n• **Features** - what it does\n• **How it works** - the nitty gritty\n\nOr something else? I'm all ears! 👂";
+        quickReplies = ['Pricing', 'Features', 'How it works', 'Talk to a human'];
+      }
+      
+      // Add some random car lingo occasionally
+      if (Math.random() > 0.7 && !response.includes(VINNY_PERSONALITY.carLingo[0])) {
+        response += '\n\n' + randomFrom(VINNY_PERSONALITY.carLingo);
+      }
+      
+      setTimeout(() => {
+        hideTyping();
+        addBotMessage(response);
+        if (quickReplies.length > 0) {
+          setTimeout(() => showQuickReplies(quickReplies), 300);
+        }
+      }, delay);
+    }
+    
+    // Auto-open after delay (optional)
+    // setTimeout(() => { if (!document.getElementById('chatWidget').classList.contains('open')) toggleChat(); }, 30000);
+  </script>
+</body>
+</html>

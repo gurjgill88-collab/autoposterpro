@@ -1,0 +1,1214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoPosterPro - CRM Dashboard</title>
+  <style>
+    :root {
+      --purple: #7c3aed;
+      --purple-dark: #6d28d9;
+      --orange: #f97316;
+      --green: #22c55e;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --yellow: #eab308;
+      --bg: #0f0a1a;
+      --card: #1a1425;
+      --card-hover: #231a33;
+      --text: #fff;
+      --text-dim: #a1a1aa;
+      --border: #2d2640;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    
+    /* Layout */
+    .app { display: flex; min-height: 100vh; }
+    .sidebar { width: 260px; background: var(--card); border-right: 1px solid var(--border); padding: 20px 0; position: fixed; height: 100vh; overflow-y: auto; }
+    .main { flex: 1; margin-left: 260px; }
+    .header { background: var(--card); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; }
+    .content { padding: 24px; }
+    
+    /* Sidebar */
+    .logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .logo h1 { font-size: 22px; font-weight: 800; }
+    .logo h1 span { color: var(--orange); }
+    .logo p { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+    
+    .nav-section { margin-bottom: 24px; }
+    .nav-section-title { font-size: 11px; color: var(--text-dim); text-transform: uppercase; padding: 0 20px; margin-bottom: 8px; font-weight: 600; }
+    .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--text-dim); text-decoration: none; transition: all 0.2s; cursor: pointer; }
+    .nav-item:hover { background: var(--card-hover); color: var(--text); }
+    .nav-item.active { background: rgba(124, 58, 237, 0.15); color: var(--purple); border-right: 3px solid var(--purple); }
+    .nav-item .icon { font-size: 18px; width: 24px; text-align: center; }
+    .nav-item .badge { margin-left: auto; background: var(--orange); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+    
+    .user-info { padding: 20px; border-top: 1px solid var(--border); margin-top: auto; position: absolute; bottom: 0; width: 100%; background: var(--card); }
+    .user-info .name { font-weight: 600; font-size: 14px; }
+    .user-info .role { font-size: 12px; color: var(--text-dim); }
+    
+    /* Header */
+    .header-title { font-size: 20px; font-weight: 600; }
+    .header-actions { display: flex; gap: 12px; align-items: center; }
+    
+    /* Cards & Stats */
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    @media (max-width: 1200px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .stat-card .label { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+    .stat-card .value { font-size: 32px; font-weight: 700; }
+    .stat-card .change { font-size: 12px; margin-top: 8px; }
+    .stat-card .change.up { color: var(--green); }
+    .stat-card .change.down { color: var(--red); }
+    
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 24px; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .card-header h3 { font-size: 16px; font-weight: 600; }
+    .card-body { padding: 20px; }
+    
+    /* Buttons */
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); color: white; }
+    .btn-success { background: var(--green); color: white; }
+    .btn-orange { background: var(--orange); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-sm { padding: 6px 12px; font-size: 12px; }
+    .btn:hover { filter: brightness(1.1); }
+    .btn-icon { width: 32px; height: 32px; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 8px; }
+    
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { font-size: 12px; color: var(--text-dim); text-transform: uppercase; font-weight: 500; background: rgba(0,0,0,0.2); }
+    td { font-size: 14px; }
+    tr:hover { background: var(--card-hover); }
+    
+    /* Badges */
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .badge-new { background: rgba(59, 130, 246, 0.2); color: var(--blue); }
+    .badge-hot { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+    .badge-warm { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+    .badge-cold { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+    .badge-won { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+    .badge-lost { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+    .badge-open { background: rgba(234, 179, 8, 0.2); color: var(--yellow); }
+    
+    /* Forms */
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 13px; color: var(--text-dim); margin-bottom: 6px; }
+    input, select, textarea { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--purple); }
+    textarea { min-height: 100px; resize: vertical; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    
+    /* Modal */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); z-index: 1000; align-items: center; justify-content: center; }
+    .modal-overlay.show { display: flex; }
+    .modal { background: var(--card); border-radius: 16px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+    .modal-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .modal-header h3 { font-size: 18px; }
+    .modal-close { background: none; border: none; color: var(--text-dim); font-size: 24px; cursor: pointer; }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 12px; }
+    
+    /* Lead Detail Panel */
+    .lead-detail { display: none; position: fixed; right: 0; top: 0; width: 450px; height: 100vh; background: var(--card); border-left: 1px solid var(--border); z-index: 500; overflow-y: auto; }
+    .lead-detail.show { display: block; }
+    .lead-detail-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: start; }
+    .lead-detail-body { padding: 20px; }
+    
+    /* Activity Timeline */
+    .timeline { position: relative; padding-left: 24px; }
+    .timeline::before { content: ''; position: absolute; left: 8px; top: 0; bottom: 0; width: 2px; background: var(--border); }
+    .timeline-item { position: relative; padding-bottom: 20px; }
+    .timeline-item::before { content: ''; position: absolute; left: -20px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: var(--purple); border: 2px solid var(--bg); }
+    .timeline-item.email::before { background: var(--blue); }
+    .timeline-item.call::before { background: var(--green); }
+    .timeline-item.note::before { background: var(--orange); }
+    .timeline-item .time { font-size: 11px; color: var(--text-dim); }
+    .timeline-item .content { margin-top: 4px; font-size: 14px; }
+    
+    /* Email Composer */
+    .email-composer { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-top: 16px; }
+    .template-select { margin-bottom: 12px; }
+    
+    /* Notification Dot */
+    .notification-dot { width: 8px; height: 8px; background: var(--orange); border-radius: 50%; display: inline-block; margin-left: 6px; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    
+    /* Tabs */
+    .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .tab { padding: 12px 20px; cursor: pointer; color: var(--text-dim); border-bottom: 2px solid transparent; transition: all 0.2s; }
+    .tab:hover { color: var(--text); }
+    .tab.active { color: var(--purple); border-bottom-color: var(--purple); }
+    
+    /* Search */
+    .search-box { position: relative; }
+    .search-box input { padding-left: 40px; }
+    .search-box .icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-dim); }
+    
+    /* Hidden sections */
+    .section { display: none; }
+    .section.active { display: block; }
+    
+    /* Quick Actions */
+    .quick-actions { display: flex; gap: 8px; margin-top: 12px; }
+    .quick-action { padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .quick-action:hover { border-color: var(--purple); color: var(--purple); }
+    
+    /* Toast Notification */
+    .toast { position: fixed; bottom: 20px; right: 20px; background: var(--card); border: 1px solid var(--green); border-radius: 8px; padding: 16px 20px; display: none; align-items: center; gap: 12px; z-index: 2000; animation: slideIn 0.3s ease; }
+    .toast.show { display: flex; }
+    .toast.error { border-color: var(--red); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">
+        <h1>Auto<span>Poster</span>Pro</h1>
+        <p>CRM Dashboard</p>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Overview</div>
+        <div class="nav-item active" data-section="dashboard">
+          <span class="icon">📊</span> Dashboard
+        </div>
+      </div>
+      
+      <div class="nav-section">
+        <div class="nav-section-title">Sales</div>
+        <div class="nav-item" data-section="leads">
+          <span class="icon">👥</span> Leads
+          <span class="badge" id="newLeadsBadge">3</span>
+        </div>
+        <div class="nav-item" data-section="pipeline">
+          <span class="icon">📈</span> Pipeline
+        </div>
+        <div class="nav-item" data-section="activities">
+          <span class="icon">📋</span> Activities
+          <span class="notification-dot" id="activityDot" style="display:none;"></span>
+        </div>
+      </div>
+      
+      <div class="nav-section" id="adminNav">
+        <div class="nav-section-title">Admin</div>
+        <div class="nav-item" data-section="licenses">
+          <span class="icon">🔑</span> Licenses
+        </div>
+        <div class="nav-item" data-section="users">
+          <span class="icon">👤</span> Users
+        </div>
+        <div class="nav-item" data-section="templates">
+          <span class="icon">📝</span> Email Templates
+        </div>
+        <div class="nav-item" data-section="settings">
+          <span class="icon">⚙️</span> Settings
+        </div>
+      </div>
+      
+      <div class="user-info">
+        <div class="name" id="currentUserName">Loading...</div>
+        <div class="role" id="currentUserRole">-</div>
+      </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main">
+      <div class="header">
+        <h2 class="header-title" id="pageTitle">Dashboard</h2>
+        <div class="header-actions">
+          <div class="search-box">
+            <span class="icon">🔍</span>
+            <input type="text" placeholder="Search leads..." id="globalSearch">
+          </div>
+          <button class="btn btn-primary" onclick="openModal('addLead')">+ Add Lead</button>
+        </div>
+      </div>
+      
+      <div class="content">
+        <!-- Dashboard Section -->
+        <div class="section active" id="section-dashboard">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="label">Total Leads</div>
+              <div class="value" id="statTotalLeads">0</div>
+              <div class="change up">↑ 12% this month</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Hot Leads</div>
+              <div class="value" id="statHotLeads">0</div>
+              <div class="change up">↑ 3 this week</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Emails Opened</div>
+              <div class="value" id="statEmailsOpened">0</div>
+              <div class="change up">↑ 24% open rate</div>
+            </div>
+            <div class="stat-card">
+              <div class="label">Deals Won</div>
+              <div class="value" id="statDealsWon">0</div>
+              <div class="change up">$<span id="statRevenue">0</span> MRR</div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h3>🔥 Recent Activity</h3>
+            </div>
+            <div class="card-body">
+              <div class="timeline" id="recentActivity">
+                <!-- Activity items loaded dynamically -->
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <h3>📧 Email Opens Today</h3>
+              <button class="btn btn-sm btn-outline" onclick="refreshEmailOpens()">Refresh</button>
+            </div>
+            <div class="card-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Lead</th>
+                    <th>Email Subject</th>
+                    <th>Opened At</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="emailOpensTable">
+                  <tr><td colspan="4" style="text-align:center; color:var(--text-dim);">No opens yet today</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Leads Section -->
+        <div class="section" id="section-leads">
+          <div class="card">
+            <div class="card-header">
+              <h3>All Leads</h3>
+              <div style="display:flex; gap:12px;">
+                <select id="leadFilter" onchange="filterLeads()" style="width:150px;">
+                  <option value="all">All Leads</option>
+                  <option value="new">New</option>
+                  <option value="hot">Hot 🔥</option>
+                  <option value="warm">Warm</option>
+                  <option value="cold">Cold</option>
+                </select>
+                <button class="btn btn-primary btn-sm" onclick="openModal('addLead')">+ Add Lead</button>
+              </div>
+            </div>
+            <div class="card-body" style="padding:0;">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Dealership</th>
+                    <th>Status</th>
+                    <th>Last Contact</th>
+                    <th>Next Follow-up</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="leadsTable">
+                  <!-- Leads loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pipeline Section -->
+        <div class="section" id="section-pipeline">
+          <div style="display:grid; grid-template-columns: repeat(5, 1fr); gap:16px;">
+            <div class="card" style="background:var(--bg);">
+              <div class="card-header"><h3>📥 New</h3></div>
+              <div class="card-body" id="pipelineNew" style="min-height:300px;"></div>
+            </div>
+            <div class="card" style="background:var(--bg);">
+              <div class="card-header"><h3>📞 Contacted</h3></div>
+              <div class="card-body" id="pipelineContacted" style="min-height:300px;"></div>
+            </div>
+            <div class="card" style="background:var(--bg);">
+              <div class="card-header"><h3>🎯 Demo Scheduled</h3></div>
+              <div class="card-body" id="pipelineDemo" style="min-height:300px;"></div>
+            </div>
+            <div class="card" style="background:var(--bg);">
+              <div class="card-header"><h3>💰 Proposal Sent</h3></div>
+              <div class="card-body" id="pipelineProposal" style="min-height:300px;"></div>
+            </div>
+            <div class="card" style="background:var(--bg);">
+              <div class="card-header"><h3>✅ Won</h3></div>
+              <div class="card-body" id="pipelineWon" style="min-height:300px;"></div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Activities Section -->
+        <div class="section" id="section-activities">
+          <div class="card">
+            <div class="card-header">
+              <h3>📋 Today's Tasks</h3>
+              <button class="btn btn-primary btn-sm" onclick="openModal('addTask')">+ Add Task</button>
+            </div>
+            <div class="card-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Lead</th>
+                    <th>Due</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tasksTable">
+                  <!-- Tasks loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Email Templates Section -->
+        <div class="section" id="section-templates">
+          <div class="card">
+            <div class="card-header">
+              <h3>📝 Email Templates</h3>
+              <button class="btn btn-primary btn-sm" onclick="openModal('addTemplate')">+ New Template</button>
+            </div>
+            <div class="card-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Subject</th>
+                    <th>Category</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="templatesTable">
+                  <!-- Templates loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Users Section (Admin Only) -->
+        <div class="section" id="section-users">
+          <div class="card">
+            <div class="card-header">
+              <h3>👤 Team Members</h3>
+              <button class="btn btn-primary btn-sm" onclick="openModal('addUser')">+ Add User</button>
+            </div>
+            <div class="card-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="usersTable">
+                  <!-- Users loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Licenses Section (Admin Only) -->
+        <div class="section" id="section-licenses">
+          <!-- Existing license management -->
+          <div class="card">
+            <div class="card-header">
+              <h3>🔑 License Management</h3>
+              <button class="btn btn-primary btn-sm" onclick="openModal('addLicense')">+ Generate License</button>
+            </div>
+            <div class="card-body">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Key</th>
+                    <th>Dealer</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="licensesTable">
+                  <!-- Licenses loaded dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Settings Section -->
+        <div class="section" id="section-settings">
+          <div class="card">
+            <div class="card-header"><h3>⚙️ Settings</h3></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Company Name</label>
+                <input type="text" value="AutoPosterPro">
+              </div>
+              <div class="form-group">
+                <label>Support Email</label>
+                <input type="email" value="support@autoposterpro.com">
+              </div>
+              <div class="form-group">
+                <label>Email Tracking</label>
+                <select>
+                  <option value="enabled">Enabled - Track opens</option>
+                  <option value="disabled">Disabled</option>
+                </select>
+              </div>
+              <button class="btn btn-primary">Save Settings</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Lead Detail Slide Panel -->
+  <div class="lead-detail" id="leadDetailPanel">
+    <div class="lead-detail-header">
+      <div>
+        <h3 id="leadDetailName">Lead Name</h3>
+        <p style="color:var(--text-dim); font-size:13px;" id="leadDetailCompany">Company</p>
+      </div>
+      <button class="btn btn-icon btn-outline" onclick="closeLeadDetail()">✕</button>
+    </div>
+    <div class="lead-detail-body">
+      <div class="tabs">
+        <div class="tab active" data-tab="info">Info</div>
+        <div class="tab" data-tab="activity">Activity</div>
+        <div class="tab" data-tab="notes">Notes</div>
+        <div class="tab" data-tab="emails">Emails</div>
+      </div>
+      
+      <!-- Info Tab -->
+      <div id="leadTab-info">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="leadDetailEmail" readonly>
+        </div>
+        <div class="form-group">
+          <label>Phone</label>
+          <input type="tel" id="leadDetailPhone" readonly>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="leadDetailStatus" onchange="updateLeadStatus()">
+            <option value="new">New</option>
+            <option value="contacted">Contacted</option>
+            <option value="demo">Demo Scheduled</option>
+            <option value="proposal">Proposal Sent</option>
+            <option value="won">Won</option>
+            <option value="lost">Lost</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Temperature</label>
+          <select id="leadDetailTemp" onchange="updateLeadTemp()">
+            <option value="hot">🔥 Hot</option>
+            <option value="warm">🌡️ Warm</option>
+            <option value="cold">❄️ Cold</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Next Follow-up</label>
+          <input type="datetime-local" id="leadDetailFollowup" onchange="updateFollowup()">
+        </div>
+        
+        <div class="quick-actions">
+          <div class="quick-action" onclick="quickEmail()">📧 Email</div>
+          <div class="quick-action" onclick="quickCall()">📞 Log Call</div>
+          <div class="quick-action" onclick="quickNote()">📝 Add Note</div>
+          <div class="quick-action" onclick="quickTask()">✅ Add Task</div>
+        </div>
+      </div>
+      
+      <!-- Activity Tab -->
+      <div id="leadTab-activity" style="display:none;">
+        <div class="timeline" id="leadActivityTimeline">
+          <!-- Activity items -->
+        </div>
+      </div>
+      
+      <!-- Notes Tab -->
+      <div id="leadTab-notes" style="display:none;">
+        <textarea id="newNoteText" placeholder="Add a note..." style="margin-bottom:12px;"></textarea>
+        <button class="btn btn-sm btn-primary" onclick="saveNote()">Save Note</button>
+        <div id="leadNotesList" style="margin-top:20px;">
+          <!-- Notes list -->
+        </div>
+      </div>
+      
+      <!-- Emails Tab -->
+      <div id="leadTab-emails" style="display:none;">
+        <div class="email-composer">
+          <div class="form-group template-select">
+            <label>Use Template</label>
+            <select id="emailTemplate" onchange="loadTemplate()">
+              <option value="">-- Select Template --</option>
+              <option value="intro">Introduction</option>
+              <option value="followup">Follow Up</option>
+              <option value="demo">Demo Invitation</option>
+              <option value="pricing">Pricing Info</option>
+              <option value="promo">Current Promos</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" id="emailSubject" placeholder="Email subject...">
+          </div>
+          <div class="form-group">
+            <label>Message</label>
+            <textarea id="emailBody" placeholder="Type your message..." style="min-height:150px;"></textarea>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="trackEmail" checked> Track opens
+            </label>
+            <button class="btn btn-primary" onclick="sendEmail()">📧 Send Email</button>
+          </div>
+        </div>
+        
+        <div style="margin-top:24px;">
+          <h4 style="margin-bottom:12px;">Sent Emails</h4>
+          <div id="leadEmailsList">
+            <!-- Email history -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Modals -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="modalTitle">Modal Title</h3>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Dynamic content -->
+      </div>
+      <div class="modal-footer" id="modalFooter">
+        <button class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button class="btn btn-primary" id="modalAction">Save</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Toast Notification -->
+  <div class="toast" id="toast">
+    <span id="toastIcon">✅</span>
+    <span id="toastMessage">Success!</span>
+  </div>
+
+  <script>
+    // ============================================
+    // CRM DASHBOARD JAVASCRIPT
+    // ============================================
+    
+    const API_BASE = '/api';
+    let currentUser = null;
+    let leads = [];
+    let currentLeadId = null;
+    
+    // Email Templates
+    const EMAIL_TEMPLATES = {
+      intro: {
+        subject: "Save Hours Every Day with AutoPosterPro",
+        body: `Hi {{firstName}},
+
+I noticed {{dealership}} might be spending a lot of time posting vehicles to Facebook Marketplace manually.
+
+What if I told you there's a way to do it in 30 seconds instead of 15 minutes?
+
+AutoPosterPro is an AI-powered tool that:
+• Scrapes all vehicle info with one click
+• Writes unique descriptions (no shadowbans!)
+• Posts to Marketplace in seconds
+
+Would you be open to a quick 15-minute demo? I think you'll be impressed.
+
+Best,
+The AutoPosterPro Team`
+      },
+      followup: {
+        subject: "Quick follow-up - AutoPosterPro",
+        body: `Hi {{firstName}},
+
+I wanted to follow up on my previous email about AutoPosterPro.
+
+Are you still spending hours posting vehicles to Facebook Marketplace? Our dealers are saving 2-3 hours every day.
+
+Just reply to this email and I'll set up a quick demo whenever works for you.
+
+Best,
+The AutoPosterPro Team`
+      },
+      demo: {
+        subject: "Let's schedule your AutoPosterPro demo",
+        body: `Hi {{firstName}},
+
+Great news! I'd love to show you how AutoPosterPro can help {{dealership}} post vehicles faster.
+
+The demo takes about 15 minutes, and I'll walk you through:
+• How the one-click scraping works
+• The AI-powered descriptions
+• How to avoid Facebook shadowbans
+
+What day/time works best for you this week?
+
+Best,
+The AutoPosterPro Team`
+      },
+      pricing: {
+        subject: "AutoPosterPro pricing for {{dealership}}",
+        body: `Hi {{firstName}},
+
+Thanks for your interest in AutoPosterPro! Here's our pricing:
+
+🚀 Starter - $219/month (1 user)
+⚡ Professional - $1,199/month (6-11 users)
+🏢 Enterprise - $1,799/month (12-20 users)
+
+All plans include AI-powered descriptions, automated images, and email support.
+
+We also have some promotions running right now - let me know your team size and I'll see what I can do!
+
+Best,
+The AutoPosterPro Team`
+      },
+      promo: {
+        subject: "Special offer for {{dealership}}",
+        body: `Hi {{firstName}},
+
+I wanted to reach out because we're running a special promotion right now that I think {{dealership}} could benefit from.
+
+If you're ready to move forward this week, I can work with my manager to get you a better deal on the setup costs.
+
+Sound interesting? Just reply and let's chat!
+
+Best,
+The AutoPosterPro Team`
+      }
+    };
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // Check login
+      const key = localStorage.getItem('crmAdminKey');
+      if (!key) {
+        // Show login
+        showLogin();
+      } else {
+        init(key);
+      }
+      
+      // Nav clicks
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const section = item.dataset.section;
+          if (section) switchSection(section);
+        });
+      });
+      
+      // Lead detail tabs
+      document.querySelectorAll('.lead-detail .tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.lead-detail .tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          document.querySelectorAll('[id^="leadTab-"]').forEach(c => c.style.display = 'none');
+          document.getElementById('leadTab-' + tab.dataset.tab).style.display = 'block';
+        });
+      });
+    });
+    
+    function showLogin() {
+      document.querySelector('.main .content').innerHTML = `
+        <div style="max-width:400px; margin:60px auto;">
+          <div class="card">
+            <div class="card-header"><h3>🔐 Login</h3></div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="loginEmail" placeholder="you@example.com">
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="loginPassword" placeholder="••••••••">
+              </div>
+              <button class="btn btn-primary" style="width:100%;" onclick="doLogin()">Login</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+    
+    async function doLogin() {
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      
+      // For now, simple check - in production, verify against API
+      if (password === 'admin123') {
+        localStorage.setItem('crmAdminKey', password);
+        localStorage.setItem('crmUserRole', 'admin');
+        localStorage.setItem('crmUserName', 'Admin User');
+        location.reload();
+      } else if (password === 'sales123') {
+        localStorage.setItem('crmAdminKey', password);
+        localStorage.setItem('crmUserRole', 'sales');
+        localStorage.setItem('crmUserName', 'Sales Rep');
+        location.reload();
+      } else {
+        showToast('Invalid credentials', 'error');
+      }
+    }
+    
+    function init(key) {
+      currentUser = {
+        name: localStorage.getItem('crmUserName') || 'User',
+        role: localStorage.getItem('crmUserRole') || 'sales'
+      };
+      
+      document.getElementById('currentUserName').textContent = currentUser.name;
+      document.getElementById('currentUserRole').textContent = currentUser.role === 'admin' ? 'Administrator' : 'Sales Rep';
+      
+      // Hide admin nav for sales users
+      if (currentUser.role !== 'admin') {
+        document.getElementById('adminNav').style.display = 'none';
+      }
+      
+      loadDashboard();
+      loadLeads();
+    }
+    
+    function switchSection(section) {
+      document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+      document.querySelector(`.nav-item[data-section="${section}"]`).classList.add('active');
+      
+      document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+      document.getElementById('section-' + section).classList.add('active');
+      
+      document.getElementById('pageTitle').textContent = section.charAt(0).toUpperCase() + section.slice(1);
+    }
+    
+    async function loadDashboard() {
+      // Load stats
+      document.getElementById('statTotalLeads').textContent = leads.length || '12';
+      document.getElementById('statHotLeads').textContent = leads.filter(l => l.temp === 'hot').length || '3';
+      document.getElementById('statEmailsOpened').textContent = '8';
+      document.getElementById('statDealsWon').textContent = '2';
+      document.getElementById('statRevenue').textContent = '2,398';
+      
+      // Load recent activity
+      document.getElementById('recentActivity').innerHTML = `
+        <div class="timeline-item email">
+          <div class="time">2 hours ago</div>
+          <div class="content"><strong>John Smith</strong> opened email "Pricing Info"</div>
+        </div>
+        <div class="timeline-item note">
+          <div class="time">4 hours ago</div>
+          <div class="content">Added note on <strong>Vancouver Motors</strong></div>
+        </div>
+        <div class="timeline-item call">
+          <div class="time">Yesterday</div>
+          <div class="content">Call with <strong>Mike Johnson</strong> - interested in demo</div>
+        </div>
+      `;
+    }
+    
+    async function loadLeads() {
+      // Demo data - in production, fetch from API
+      leads = [
+        { id: 1, firstName: 'John', lastName: 'Smith', email: 'john@vancouvermotors.com', phone: '(604) 555-1234', dealership: 'Vancouver Motors', status: 'new', temp: 'hot', lastContact: '2 hours ago', nextFollowup: '2026-01-27T10:00', notes: [], activities: [] },
+        { id: 2, firstName: 'Mike', lastName: 'Johnson', email: 'mike@bcauto.com', phone: '(604) 555-5678', dealership: 'BC Auto Sales', status: 'contacted', temp: 'warm', lastContact: 'Yesterday', nextFollowup: '2026-01-28T14:00', notes: [], activities: [] },
+        { id: 3, firstName: 'Sarah', lastName: 'Williams', email: 'sarah@premiumcars.com', phone: '(778) 555-9012', dealership: 'Premium Cars Ltd', status: 'demo', temp: 'hot', lastContact: '3 days ago', nextFollowup: '2026-01-29T09:00', notes: [], activities: [] },
+      ];
+      
+      renderLeads();
+    }
+    
+    function renderLeads() {
+      const tbody = document.getElementById('leadsTable');
+      tbody.innerHTML = leads.map(l => `
+        <tr onclick="openLeadDetail(${l.id})" style="cursor:pointer;">
+          <td><strong>${l.firstName} ${l.lastName}</strong></td>
+          <td>${l.dealership}</td>
+          <td><span class="badge badge-${l.temp}">${l.temp === 'hot' ? '🔥 Hot' : l.temp === 'warm' ? '🌡️ Warm' : '❄️ Cold'}</span></td>
+          <td>${l.lastContact}</td>
+          <td>${new Date(l.nextFollowup).toLocaleDateString()}</td>
+          <td>
+            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); quickEmailLead(${l.id})">📧</button>
+            <button class="btn btn-sm btn-outline" onclick="event.stopPropagation(); quickCallLead(${l.id})">📞</button>
+          </td>
+        </tr>
+      `).join('');
+      
+      // Update badge
+      document.getElementById('newLeadsBadge').textContent = leads.filter(l => l.status === 'new').length;
+    }
+    
+    function openLeadDetail(leadId) {
+      currentLeadId = leadId;
+      const lead = leads.find(l => l.id === leadId);
+      if (!lead) return;
+      
+      document.getElementById('leadDetailName').textContent = `${lead.firstName} ${lead.lastName}`;
+      document.getElementById('leadDetailCompany').textContent = lead.dealership;
+      document.getElementById('leadDetailEmail').value = lead.email;
+      document.getElementById('leadDetailPhone').value = lead.phone;
+      document.getElementById('leadDetailStatus').value = lead.status;
+      document.getElementById('leadDetailTemp').value = lead.temp;
+      document.getElementById('leadDetailFollowup').value = lead.nextFollowup;
+      
+      document.getElementById('leadDetailPanel').classList.add('show');
+    }
+    
+    function closeLeadDetail() {
+      document.getElementById('leadDetailPanel').classList.remove('show');
+      currentLeadId = null;
+    }
+    
+    function loadTemplate() {
+      const templateId = document.getElementById('emailTemplate').value;
+      if (!templateId) return;
+      
+      const lead = leads.find(l => l.id === currentLeadId);
+      const template = EMAIL_TEMPLATES[templateId];
+      
+      if (template && lead) {
+        let subject = template.subject.replace(/\{\{(\w+)\}\}/g, (m, key) => lead[key] || '');
+        let body = template.body.replace(/\{\{(\w+)\}\}/g, (m, key) => lead[key] || '');
+        
+        document.getElementById('emailSubject').value = subject;
+        document.getElementById('emailBody').value = body;
+      }
+    }
+    
+    function sendEmail() {
+      const subject = document.getElementById('emailSubject').value;
+      const body = document.getElementById('emailBody').value;
+      const track = document.getElementById('trackEmail').checked;
+      
+      if (!subject || !body) {
+        showToast('Please fill in subject and message', 'error');
+        return;
+      }
+      
+      // In production, call API to send email
+      showToast('Email sent successfully!');
+      
+      // Add to activity
+      const lead = leads.find(l => l.id === currentLeadId);
+      if (lead) {
+        lead.activities.unshift({
+          type: 'email',
+          content: `Sent email: "${subject}"`,
+          time: 'Just now'
+        });
+        lead.lastContact = 'Just now';
+      }
+      
+      // Clear form
+      document.getElementById('emailSubject').value = '';
+      document.getElementById('emailBody').value = '';
+      document.getElementById('emailTemplate').value = '';
+    }
+    
+    function saveNote() {
+      const noteText = document.getElementById('newNoteText').value;
+      if (!noteText.trim()) return;
+      
+      const lead = leads.find(l => l.id === currentLeadId);
+      if (lead) {
+        lead.notes.unshift({
+          text: noteText,
+          time: 'Just now',
+          author: currentUser.name
+        });
+        lead.activities.unshift({
+          type: 'note',
+          content: noteText,
+          time: 'Just now'
+        });
+        
+        document.getElementById('newNoteText').value = '';
+        showToast('Note saved!');
+        renderLeadNotes(lead);
+      }
+    }
+    
+    function renderLeadNotes(lead) {
+      document.getElementById('leadNotesList').innerHTML = lead.notes.map(n => `
+        <div style="background:var(--bg); padding:12px; border-radius:8px; margin-bottom:8px;">
+          <div style="font-size:12px; color:var(--text-dim);">${n.time} by ${n.author}</div>
+          <div style="margin-top:6px;">${n.text}</div>
+        </div>
+      `).join('') || '<p style="color:var(--text-dim);">No notes yet</p>';
+    }
+    
+    function quickEmail() {
+      document.querySelectorAll('.lead-detail .tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('.lead-detail .tab[data-tab="emails"]').classList.add('active');
+      document.querySelectorAll('[id^="leadTab-"]').forEach(c => c.style.display = 'none');
+      document.getElementById('leadTab-emails').style.display = 'block';
+    }
+    
+    function quickNote() {
+      document.querySelectorAll('.lead-detail .tab').forEach(t => t.classList.remove('active'));
+      document.querySelector('.lead-detail .tab[data-tab="notes"]').classList.add('active');
+      document.querySelectorAll('[id^="leadTab-"]').forEach(c => c.style.display = 'none');
+      document.getElementById('leadTab-notes').style.display = 'block';
+      document.getElementById('newNoteText').focus();
+    }
+    
+    function quickCall() {
+      openModal('logCall');
+    }
+    
+    function openModal(type) {
+      const overlay = document.getElementById('modalOverlay');
+      const title = document.getElementById('modalTitle');
+      const body = document.getElementById('modalBody');
+      const action = document.getElementById('modalAction');
+      
+      if (type === 'addLead') {
+        title.textContent = 'Add New Lead';
+        body.innerHTML = `
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name *</label>
+              <input type="text" id="newLeadFirstName">
+            </div>
+            <div class="form-group">
+              <label>Last Name *</label>
+              <input type="text" id="newLeadLastName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Dealership *</label>
+            <input type="text" id="newLeadDealership">
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="newLeadEmail">
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" id="newLeadPhone">
+          </div>
+          <div class="form-group">
+            <label>Source</label>
+            <select id="newLeadSource">
+              <option value="website">Website</option>
+              <option value="referral">Referral</option>
+              <option value="cold-call">Cold Call</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea id="newLeadNotes" placeholder="Any initial notes..."></textarea>
+          </div>
+        `;
+        action.textContent = 'Add Lead';
+        action.onclick = addNewLead;
+      } else if (type === 'logCall') {
+        title.textContent = 'Log Call';
+        body.innerHTML = `
+          <div class="form-group">
+            <label>Call Outcome</label>
+            <select id="callOutcome">
+              <option value="connected">Connected - Positive</option>
+              <option value="callback">Callback Requested</option>
+              <option value="voicemail">Left Voicemail</option>
+              <option value="no-answer">No Answer</option>
+              <option value="not-interested">Not Interested</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Notes</label>
+            <textarea id="callNotes" placeholder="What was discussed..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Schedule Follow-up</label>
+            <input type="datetime-local" id="callFollowup">
+          </div>
+        `;
+        action.textContent = 'Save Call';
+        action.onclick = saveCall;
+      } else if (type === 'addUser') {
+        title.textContent = 'Add Team Member';
+        body.innerHTML = `
+          <div class="form-row">
+            <div class="form-group">
+              <label>First Name *</label>
+              <input type="text" id="newUserFirstName">
+            </div>
+            <div class="form-group">
+              <label>Last Name *</label>
+              <input type="text" id="newUserLastName">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" id="newUserEmail">
+          </div>
+          <div class="form-group">
+            <label>Role *</label>
+            <select id="newUserRole">
+              <option value="sales">Sales Rep</option>
+              <option value="admin">Administrator</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Temporary Password *</label>
+            <input type="text" id="newUserPassword" value="sales123">
+          </div>
+        `;
+        action.textContent = 'Create User';
+        action.onclick = addNewUser;
+      } else if (type === 'addTemplate') {
+        title.textContent = 'Create Email Template';
+        body.innerHTML = `
+          <div class="form-group">
+            <label>Template Name *</label>
+            <input type="text" id="templateName" placeholder="e.g., Follow Up #2">
+          </div>
+          <div class="form-group">
+            <label>Category</label>
+            <select id="templateCategory">
+              <option value="intro">Introduction</option>
+              <option value="followup">Follow Up</option>
+              <option value="demo">Demo</option>
+              <option value="pricing">Pricing</option>
+              <option value="promo">Promotion</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Subject Line *</label>
+            <input type="text" id="templateSubject" placeholder="Use {{firstName}}, {{dealership}} for personalization">
+          </div>
+          <div class="form-group">
+            <label>Email Body *</label>
+            <textarea id="templateBody" style="min-height:200px;" placeholder="Use {{firstName}}, {{lastName}}, {{dealership}}, {{email}} for personalization"></textarea>
+          </div>
+        `;
+        action.textContent = 'Save Template';
+        action.onclick = saveTemplate;
+      }
+      
+      overlay.classList.add('show');
+    }
+    
+    function closeModal() {
+      document.getElementById('modalOverlay').classList.remove('show');
+    }
+    
+    function addNewLead() {
+      const lead = {
+        id: leads.length + 1,
+        firstName: document.getElementById('newLeadFirstName').value,
+        lastName: document.getElementById('newLeadLastName').value,
+        dealership: document.getElementById('newLeadDealership').value,
+        email: document.getElementById('newLeadEmail').value,
+        phone: document.getElementById('newLeadPhone').value || '',
+        status: 'new',
+        temp: 'warm',
+        lastContact: 'Just added',
+        nextFollowup: new Date(Date.now() + 86400000).toISOString().slice(0, 16),
+        notes: [],
+        activities: []
+      };
+      
+      const initialNotes = document.getElementById('newLeadNotes').value;
+      if (initialNotes) {
+        lead.notes.push({ text: initialNotes, time: 'Just now', author: currentUser.name });
+      }
+      
+      leads.unshift(lead);
+      renderLeads();
+      closeModal();
+      showToast('Lead added successfully!');
+    }
+    
+    function saveCall() {
+      const lead = leads.find(l => l.id === currentLeadId);
+      if (lead) {
+        const outcome = document.getElementById('callOutcome').value;
+        const notes = document.getElementById('callNotes').value;
+        const followup = document.getElementById('callFollowup').value;
+        
+        lead.activities.unshift({
+          type: 'call',
+          content: `Call: ${outcome}${notes ? ' - ' + notes : ''}`,
+          time: 'Just now'
+        });
+        lead.lastContact = 'Just now';
+        
+        if (followup) {
+          lead.nextFollowup = followup;
+        }
+        
+        closeModal();
+        showToast('Call logged!');
+      }
+    }
+    
+    function addNewUser() {
+      // In production, call API
+      showToast('User created! They can login with the temporary password.');
+      closeModal();
+    }
+    
+    function saveTemplate() {
+      // In production, save to API
+      showToast('Template saved!');
+      closeModal();
+    }
+    
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMessage').textContent = message;
+      document.getElementById('toastIcon').textContent = type === 'error' ? '❌' : '✅';
+      toast.className = 'toast show' + (type === 'error' ? ' error' : '');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+    
+    function filterLeads() {
+      const filter = document.getElementById('leadFilter').value;
+      // Apply filter and re-render
+      renderLeads();
+    }
+    
+    // Logout
+    function logout() {
+      localStorage.removeItem('crmAdminKey');
+      localStorage.removeItem('crmUserRole');
+      localStorage.removeItem('crmUserName');
+      location.reload();
+    }
+  </script>
+</body>
+</html>
