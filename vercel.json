@@ -1,18 +1,16 @@
 {
   "version": 2,
-  "public": true,
   "rewrites": [
-    { "source": "/privacy", "destination": "/public/privacy.html" },
-    { "source": "/terms", "destination": "/public/terms.html" },
-    { "source": "/about", "destination": "/public/about.html" },
-    { "source": "/contact", "destination": "/public/contact.html" },
-    { "source": "/admin", "destination": "/public/admin.html" },
-    { "source": "/pricing", "destination": "/public/pricing.html" },
-    { "source": "/success", "destination": "/public/success.html" },
-    { "source": "/sales", "destination": "/public/sales.html" },
-    { "source": "/crm", "destination": "/public/sales.html" },
-    { "source": "/analytics", "destination": "/public/analytics.html" },
-    { "source": "/", "destination": "/public/index.html" }
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/sales", "destination": "/sales.html" },
+    { "source": "/crm", "destination": "/sales.html" },
+    { "source": "/analytics", "destination": "/analytics.html" }
   ],
   "headers": [
     {

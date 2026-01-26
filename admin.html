@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoPosterPro - Admin Dashboard</title>
+  <style>
+    :root {
+      --purple: #7c3aed;
+      --purple-dark: #6d28d9;
+      --orange: #f97316;
+      --green: #22c55e;
+      --red: #ef4444;
+      --bg: #0f0a1a;
+      --card: #1a1425;
+      --text: #fff;
+      --text-dim: #a1a1aa;
+      --border: #2d2640;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+      padding: 20px;
+      text-align: center;
+    }
+    .logo { font-size: 28px; font-weight: 800; }
+    .logo span { color: var(--orange); }
+    .subtitle { font-size: 12px; opacity: 0.8; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 30px 20px; }
+    
+    /* Login */
+    .login-form {
+      max-width: 400px;
+      margin: 60px auto;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+    }
+    .login-form h2 { margin-bottom: 20px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 14px; margin-bottom: 8px; color: var(--text-dim); }
+    input, select, textarea {
+      width: 100%;
+      padding: 12px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    input:focus, select:focus, textarea:focus { outline: none; border-color: var(--purple); }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%); color: white; }
+    .btn-success { background: linear-gradient(135deg, var(--green) 0%, #16a34a 100%); color: white; }
+    .btn-danger { background: var(--red); color: white; }
+    .btn-orange { background: linear-gradient(135deg, var(--orange) 0%, #ea580c 100%); color: white; }
+    .btn:hover { filter: brightness(1.1); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .btn-small { padding: 8px 16px; font-size: 12px; }
+    .btn-full { width: 100%; }
+    
+    /* Dashboard */
+    .dashboard { display: none; }
+    .dashboard.show { display: block; }
+    
+    /* Tabs */
+    .tabs { display: flex; gap: 8px; margin-bottom: 30px; border-bottom: 1px solid var(--border); padding-bottom: 15px; }
+    .tab-btn {
+      padding: 12px 24px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-dim);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--purple); border-color: var(--purple); color: white; }
+    .tab-btn:hover:not(.active) { border-color: var(--purple); color: var(--text); }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    
+    /* Cards */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .card-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+    
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
+    .stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; }
+    .stat-value { font-size: 32px; font-weight: 700; color: var(--purple); }
+    .stat-label { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+    
+    /* Tables */
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--text-dim); font-size: 12px; text-transform: uppercase; font-weight: 500; }
+    td { font-size: 14px; }
+    .license-key { font-family: monospace; background: var(--bg); padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+    
+    /* Badges */
+    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+    .badge-green { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+    .badge-orange { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+    .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+    
+    /* Forms */
+    .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } .stats { grid-template-columns: repeat(2, 1fr); } }
+    
+    /* Alerts */
+    .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; font-size: 14px; }
+    .alert-success { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+    .alert-error { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+    
+    /* New License Display */
+    .new-item-display {
+      background: var(--bg);
+      border: 2px solid var(--green);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 20px 0;
+      text-align: center;
+      display: none;
+    }
+    .new-item-display.show { display: block; }
+    .new-item-display .key { font-family: monospace; font-size: 24px; color: var(--green); margin: 10px 0; }
+    .copy-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .copy-btn:hover { border-color: var(--purple); color: var(--text); }
+    
+    /* Agreement Form */
+    .agreement-preview {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .agreement-preview h4 { color: var(--purple); margin-bottom: 15px; }
+    .agreement-preview p { font-size: 13px; color: var(--text-dim); margin-bottom: 8px; }
+    .agreement-preview strong { color: var(--text); }
+    
+    .actions { display: flex; gap: 8px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">Auto<span>Poster</span>Pro</div>
+    <div class="subtitle">Admin Dashboard</div>
+  </div>
+  
+  <!-- Login Form -->
+  <div class="login-form" id="loginForm">
+    <h2>🔐 Admin Login</h2>
+    <div class="form-group">
+      <label>Admin Secret Key</label>
+      <input type="password" id="adminKey" placeholder="Enter admin key...">
+    </div>
+    <button class="btn btn-primary btn-full" onclick="login()">Login</button>
+    <div id="loginError" class="alert alert-error" style="display:none; margin-top:16px;"></div>
+  </div>
+  
+  <!-- Dashboard -->
+  <div class="container dashboard" id="dashboard">
+    <div id="alertContainer"></div>
+    
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-value" id="totalLicenses">0</div>
+        <div class="stat-label">Total Licenses</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="activeLicenses">0</div>
+        <div class="stat-label">Active</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="activatedLicenses">0</div>
+        <div class="stat-label">On Devices</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="totalContacts">0</div>
+        <div class="stat-label">Leads</div>
+      </div>
+    </div>
+    
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="licenses">📋 Licenses</button>
+      <button class="tab-btn" data-tab="new-dealer">➕ New Dealer</button>
+      <button class="tab-btn" data-tab="contacts">📧 Contacts</button>
+    </div>
+    
+    <!-- Licenses Tab -->
+    <div class="tab-content active" id="tab-licenses">
+      <div class="card">
+        <div class="card-title">Quick Create License</div>
+        <div style="display: flex; gap: 16px; align-items: end;">
+          <div class="form-group" style="flex:1; margin:0;">
+            <label>Dealer Name</label>
+            <input type="text" id="quickDealerName" placeholder="Vancouver Pre-Owned">
+          </div>
+          <div class="form-group" style="flex:1; margin:0;">
+            <label>Dealer #</label>
+            <input type="text" id="quickDealerNumber" placeholder="12345">
+          </div>
+          <button class="btn btn-success" onclick="quickCreateLicense()">Generate</button>
+        </div>
+        <div class="new-item-display" id="newLicenseDisplay">
+          <div>✅ License Created!</div>
+          <div class="key" id="newLicenseKey"></div>
+          <button class="copy-btn" onclick="copyLicense()">📋 Copy Key</button>
+        </div>
+      </div>
+      
+      <div class="card">
+        <div class="card-title">All Licenses</div>
+        <table>
+          <thead>
+            <tr>
+              <th>License Key</th>
+              <th>Dealer</th>
+              <th>Status</th>
+              <th>Device</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="licensesBody">
+            <tr><td colspan="6" style="text-align:center; color:var(--text-dim);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    
+    <!-- New Dealer Tab (with Agreement) -->
+    <div class="tab-content" id="tab-new-dealer">
+      <div class="card">
+        <div class="card-title">📝 Onboard New Dealer</div>
+        <p style="color:var(--text-dim); margin-bottom:20px; font-size:14px;">
+          Fill in dealer info to generate license key and service agreement.
+        </p>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Dealership Name *</label>
+            <input type="text" id="agDealerName" placeholder="Vancouver Pre-Owned Auto">
+          </div>
+          <div class="form-group">
+            <label>Dealer Registry # *</label>
+            <input type="text" id="agDealerNumber" placeholder="40289">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Contact Name *</label>
+            <input type="text" id="agContactName" placeholder="John Smith">
+          </div>
+          <div class="form-group">
+            <label>Contact Email *</label>
+            <input type="email" id="agContactEmail" placeholder="john@dealership.com">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Phone Number</label>
+            <input type="tel" id="agPhone" placeholder="(604) 555-1234">
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <input type="text" id="agAddress" placeholder="123 Main St, Vancouver, BC">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Plan *</label>
+            <select id="agPlan">
+              <option value="monthly">Monthly (Month-to-Month)</option>
+              <option value="annual">Annual (12-Month Contract)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Price (CAD/month) *</label>
+            <input type="text" id="agPrice" placeholder="99.00" value="99.00">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Start Date</label>
+          <input type="date" id="agStartDate">
+        </div>
+        
+        <div style="display: flex; gap: 12px; margin-top: 20px;">
+          <button class="btn btn-success" onclick="createDealerAndLicense()">
+            ✓ Create License + Agreement
+          </button>
+        </div>
+        
+        <div class="new-item-display" id="newDealerDisplay">
+          <div>✅ Dealer Created!</div>
+          <div class="key" id="newDealerKey"></div>
+          <button class="copy-btn" onclick="copyDealerKey()">📋 Copy License Key</button>
+          <div style="margin-top: 15px;">
+            <button class="btn btn-orange btn-small" onclick="downloadAgreement()">
+              📄 Download Agreement PDF
+            </button>
+          </div>
+        </div>
+        
+        <div class="agreement-preview" id="agreementPreview" style="display:none;">
+          <h4>📄 Agreement Preview</h4>
+          <p><strong>Dealer:</strong> <span id="prevDealer"></span></p>
+          <p><strong>Contact:</strong> <span id="prevContact"></span></p>
+          <p><strong>Email:</strong> <span id="prevEmail"></span></p>
+          <p><strong>Plan:</strong> <span id="prevPlan"></span></p>
+          <p><strong>Price:</strong> CAD $<span id="prevPrice"></span>/month</p>
+          <p style="margin-top:15px; font-size:12px; color:var(--orange);">
+            ⚠️ Agreement includes 60-day cancellation policy. Email: support@autoposterpro.com
+          </p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Contacts Tab -->
+    <div class="tab-content" id="tab-contacts">
+      <div class="card">
+        <div class="card-title">📧 Contact Form Submissions</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Dealership</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>Interest</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="contactsBody">
+            <tr><td colspan="6" style="text-align:center; color:var(--text-dim);">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const API_BASE = '/api';
+    let adminKey = '';
+    let currentDealerData = null;
+    
+    // Set default start date to today
+    document.getElementById('agStartDate').value = new Date().toISOString().split('T')[0];
+    
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+    
+    function login() {
+      adminKey = document.getElementById('adminKey').value;
+      if (!adminKey) {
+        showLoginError('Please enter admin key');
+        return;
+      }
+      fetchLicenses().then(success => {
+        if (success) {
+          document.getElementById('loginForm').style.display = 'none';
+          document.getElementById('dashboard').classList.add('show');
+          fetchContacts();
+        } else {
+          showLoginError('Invalid admin key');
+        }
+      });
+    }
+    
+    function showLoginError(msg) {
+      const el = document.getElementById('loginError');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+    
+    function showAlert(msg, type) {
+      const container = document.getElementById('alertContainer');
+      container.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+      setTimeout(() => container.innerHTML = '', 5000);
+    }
+    
+    async function fetchLicenses() {
+      try {
+        const res = await fetch(`${API_BASE}/admin/licenses`, {
+          headers: { 'Authorization': `Bearer ${adminKey}` }
+        });
+        if (!res.ok) return false;
+        const data = await res.json();
+        renderLicenses(data.licenses || []);
+        updateStats(data.licenses || []);
+        return true;
+      } catch (e) {
+        console.error(e);
+        return false;
+      }
+    }
+    
+    async function fetchContacts() {
+      try {
+        const res = await fetch(`${API_BASE}/admin/contacts`, {
+          headers: { 'Authorization': `Bearer ${adminKey}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          renderContacts(data.contacts || []);
+          document.getElementById('totalContacts').textContent = (data.contacts || []).length;
+        }
+      } catch (e) {
+        console.log('No contacts endpoint or error');
+      }
+    }
+    
+    function updateStats(licenses) {
+      document.getElementById('totalLicenses').textContent = licenses.length;
+      document.getElementById('activeLicenses').textContent = licenses.filter(l => l.active).length;
+      document.getElementById('activatedLicenses').textContent = licenses.filter(l => l.deviceId).length;
+    }
+    
+    function renderLicenses(licenses) {
+      const tbody = document.getElementById('licensesBody');
+      if (!licenses.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-dim);">No licenses yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = licenses.map(l => {
+        let badge = l.active ? (l.deviceId ? '<span class="badge badge-green">Active</span>' : '<span class="badge badge-orange">Pending</span>') : '<span class="badge badge-red">Inactive</span>';
+        let device = l.deviceId ? `<span title="${l.deviceId}">${l.deviceId.slice(0,8)}...</span>` : '-';
+        let created = l.createdAt ? new Date(l.createdAt).toLocaleDateString() : '-';
+        return `<tr>
+          <td><span class="license-key">${l.key}</span></td>
+          <td>${l.dealerName || '-'}<br><small style="color:var(--text-dim)">#${l.dealerNumber || '-'}</small></td>
+          <td>${badge}</td>
+          <td>${device}</td>
+          <td>${created}</td>
+          <td class="actions">
+            ${l.deviceId ? `<button class="btn btn-small btn-primary" onclick="resetDevice('${l.key}')">Reset</button>` : ''}
+            <button class="btn btn-small btn-danger" onclick="deactivateLicense('${l.key}', ${l.active})">${l.active ? 'Disable' : 'Delete'}</button>
+          </td>
+        </tr>`;
+      }).join('');
+    }
+    
+    function renderContacts(contacts) {
+      const tbody = document.getElementById('contactsBody');
+      if (!contacts.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-dim);">No contacts yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = contacts.map(c => {
+        let date = c.submittedAt ? new Date(c.submittedAt).toLocaleDateString() : '-';
+        return `<tr>
+          <td>${c.firstName} ${c.lastName}</td>
+          <td>${c.dealership || '-'}</td>
+          <td><a href="mailto:${c.email}" style="color:var(--purple)">${c.email}</a></td>
+          <td>${c.phone || '-'}</td>
+          <td>${c.interest || '-'}</td>
+          <td>${date}</td>
+        </tr>`;
+      }).join('');
+    }
+    
+    async function quickCreateLicense() {
+      const dealerName = document.getElementById('quickDealerName').value;
+      const dealerNumber = document.getElementById('quickDealerNumber').value;
+      
+      try {
+        const res = await fetch(`${API_BASE}/admin/licenses`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${adminKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dealerName, dealerNumber })
+        });
+        const data = await res.json();
+        if (data.success) {
+          document.getElementById('newLicenseKey').textContent = data.licenseKey;
+          document.getElementById('newLicenseDisplay').classList.add('show');
+          document.getElementById('quickDealerName').value = '';
+          document.getElementById('quickDealerNumber').value = '';
+          fetchLicenses();
+        } else {
+          showAlert(data.error || 'Failed', 'error');
+        }
+      } catch (e) {
+        showAlert('Error creating license', 'error');
+      }
+    }
+    
+    async function createDealerAndLicense() {
+      const dealerName = document.getElementById('agDealerName').value;
+      const dealerNumber = document.getElementById('agDealerNumber').value;
+      const contactName = document.getElementById('agContactName').value;
+      const contactEmail = document.getElementById('agContactEmail').value;
+      const phone = document.getElementById('agPhone').value;
+      const address = document.getElementById('agAddress').value;
+      const plan = document.getElementById('agPlan').value;
+      const price = document.getElementById('agPrice').value;
+      const startDate = document.getElementById('agStartDate').value;
+      
+      if (!dealerName || !dealerNumber || !contactName || !contactEmail || !price) {
+        showAlert('Please fill all required fields', 'error');
+        return;
+      }
+      
+      try {
+        // Create license
+        const res = await fetch(`${API_BASE}/admin/licenses`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${adminKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dealerName, dealerNumber })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          currentDealerData = {
+            licenseKey: data.licenseKey,
+            dealer_name: dealerName,
+            dealer_number: dealerNumber,
+            contact_name: contactName,
+            contact_email: contactEmail,
+            contact_phone: phone,
+            address: address,
+            plan: plan,
+            price: price,
+            start_date: startDate
+          };
+          
+          document.getElementById('newDealerKey').textContent = data.licenseKey;
+          document.getElementById('newDealerDisplay').classList.add('show');
+          
+          // Show preview
+          document.getElementById('prevDealer').textContent = dealerName;
+          document.getElementById('prevContact').textContent = contactName;
+          document.getElementById('prevEmail').textContent = contactEmail;
+          document.getElementById('prevPlan').textContent = plan === 'annual' ? 'Annual (12 months)' : 'Monthly';
+          document.getElementById('prevPrice').textContent = price;
+          document.getElementById('agreementPreview').style.display = 'block';
+          
+          fetchLicenses();
+          showAlert('Dealer created! Download the agreement PDF below.', 'success');
+        } else {
+          showAlert(data.error || 'Failed', 'error');
+        }
+      } catch (e) {
+        showAlert('Error creating dealer', 'error');
+      }
+    }
+    
+    function downloadAgreement() {
+      if (!currentDealerData) {
+        showAlert('No dealer data. Create a dealer first.', 'error');
+        return;
+      }
+      
+      // Create a simple HTML agreement that can be printed to PDF
+      const data = currentDealerData;
+      const startDate = new Date(data.start_date);
+      const termText = data.plan === 'annual' ? 'twelve (12) months' : 'month-to-month';
+      
+      const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AutoPosterPro Service Agreement - ${data.dealer_name}</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; padding: 20px; line-height: 1.6; color: #333; }
+    h1 { color: #7c3aed; text-align: center; }
+    h2 { color: #7c3aed; border-bottom: 2px solid #7c3aed; padding-bottom: 5px; margin-top: 30px; }
+    .header { text-align: center; margin-bottom: 40px; }
+    .parties { background: #f5f3ff; padding: 20px; border-radius: 8px; margin: 20px 0; }
+    .parties strong { display: inline-block; width: 120px; }
+    .box { background: #f5f3ff; border: 2px solid #7c3aed; padding: 15px; border-radius: 8px; margin: 20px 0; }
+    .signature { margin-top: 60px; }
+    .sig-line { border-bottom: 1px solid #333; width: 300px; margin: 40px 0 5px 0; }
+    .sig-label { font-size: 12px; color: #666; }
+    p { margin: 10px 0; }
+    @media print { body { margin: 20px; } }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>AUTOPOSTERPRO</h1>
+    <p>Software License and Service Agreement</p>
+  </div>
+  
+  <p>This Agreement is entered into as of <strong>${startDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</strong> by and between:</p>
+  
+  <div class="parties">
+    <p><strong>Provider:</strong> AutoPosterPro (support@autoposterpro.com)</p>
+    <p><strong>Subscriber:</strong> ${data.dealer_name}</p>
+    <p><strong>Dealer #:</strong> ${data.dealer_number}</p>
+    <p><strong>Contact:</strong> ${data.contact_name}</p>
+    <p><strong>Email:</strong> ${data.contact_email}</p>
+    <p><strong>Phone:</strong> ${data.contact_phone || 'N/A'}</p>
+    <p><strong>Address:</strong> ${data.address || 'N/A'}</p>
+  </div>
+  
+  <div class="box">
+    <p><strong>Plan:</strong> ${data.plan === 'annual' ? 'Annual (12-Month Contract)' : 'Monthly (Month-to-Month)'}</p>
+    <p><strong>Monthly Fee:</strong> CAD $${data.price}</p>
+    <p><strong>Term:</strong> ${termText}</p>
+    <p><strong>Start Date:</strong> ${startDate.toLocaleDateString()}</p>
+  </div>
+  
+  <h2>1. License Grant</h2>
+  <p>AutoPosterPro grants Subscriber a limited, non-exclusive, non-transferable, revocable license to use the AutoPosterPro Chrome extension on <strong>one (1) device only</strong>.</p>
+  
+  <h2>2. Restrictions</h2>
+  <p>Subscriber shall not: share license keys, reverse engineer the software, or use the service in violation of third-party terms of service including Facebook's policies.</p>
+  
+  <h2>3. Cancellation Policy</h2>
+  <p><strong>60-Day Notice Required.</strong> Either party may cancel this Agreement by providing written notice at least <strong>sixty (60) days</strong> prior to the desired termination date. Notices must be sent to support@autoposterpro.com.</p>
+  
+  <h2>4. Limitation of Liability</h2>
+  <p>THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTIES. AUTOPOSTERPRO'S TOTAL LIABILITY SHALL NOT EXCEED FEES PAID IN THE PRIOR 12 MONTHS.</p>
+  
+  <h2>5. Third-Party Services</h2>
+  <p>Subscriber is responsible for compliance with Facebook and other third-party terms. AutoPosterPro is not responsible for third-party account actions.</p>
+  
+  <h2>6. Governing Law</h2>
+  <p>For Canadian Subscribers: Laws of British Columbia apply. For US Subscribers: Laws of Delaware apply.</p>
+  
+  <div class="signature">
+    <h2>Signatures</h2>
+    <p>By signing below, both parties agree to the terms of this Agreement.</p>
+    
+    <p><strong>SUBSCRIBER: ${data.dealer_name}</strong></p>
+    <div class="sig-line"></div>
+    <p class="sig-label">Signature: ${data.contact_name}</p>
+    <div class="sig-line" style="width:200px;"></div>
+    <p class="sig-label">Date</p>
+    
+    <p style="margin-top:40px;"><strong>AUTOPOSTERPRO:</strong></p>
+    <div class="sig-line"></div>
+    <p class="sig-label">Authorized Representative</p>
+    <div class="sig-line" style="width:200px;"></div>
+    <p class="sig-label">Date</p>
+  </div>
+  
+  <p style="margin-top:60px; text-align:center; color:#666; font-size:12px;">
+    Questions? Contact support@autoposterpro.com
+  </p>
+</body>
+</html>`;
+      
+      // Open in new window for printing
+      const win = window.open('', '_blank');
+      win.document.write(html);
+      win.document.close();
+      win.print();
+    }
+    
+    function copyLicense() {
+      navigator.clipboard.writeText(document.getElementById('newLicenseKey').textContent);
+      showAlert('License key copied!', 'success');
+    }
+    
+    function copyDealerKey() {
+      navigator.clipboard.writeText(document.getElementById('newDealerKey').textContent);
+      showAlert('License key copied!', 'success');
+    }
+    
+    async function resetDevice(licenseKey) {
+      if (!confirm('Reset device? Dealer will need to re-activate.')) return;
+      try {
+        const res = await fetch(`${API_BASE}/admin/reset-device`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${adminKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ licenseKey })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showAlert('Device reset!', 'success');
+          fetchLicenses();
+        }
+      } catch (e) {
+        showAlert('Error', 'error');
+      }
+    }
+    
+    async function deactivateLicense(licenseKey, isActive) {
+      const action = isActive ? 'deactivate' : 'permanently delete';
+      if (!confirm(`${action} this license?`)) return;
+      try {
+        const res = await fetch(`${API_BASE}/admin/licenses`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${adminKey}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ licenseKey, permanent: !isActive })
+        });
+        const data = await res.json();
+        if (data.success) {
+          showAlert(data.message, 'success');
+          fetchLicenses();
+        }
+      } catch (e) {
+        showAlert('Error', 'error');
+      }
+    }
+    
+    // Enter key login
+    document.getElementById('adminKey').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') login();
+    });
+  </script>
+</body>
+</html>
