@@ -57,9 +57,35 @@ export default async function handler(req, res) {
   }
   
   try {
-    const { leadId, to, subject, body, trackOpens, sender, attachments } = req.body;
+    const { leadId, to, subject, body, trackOpens, sender, attachments, templateId, variables } = req.body;
     
-    if (!to || !subject || !body) {
+    let finalSubject = subject;
+    let finalBody = body;
+    
+    // Load template if specified
+    if (templateId) {
+      const template = await kv.get(templateId);
+      if (template) {
+        finalSubject = finalSubject || template.subject;
+        finalBody = finalBody || template.body;
+        
+        // Increment usage count
+        template.usageCount = (template.usageCount || 0) + 1;
+        template.lastUsedAt = new Date().toISOString();
+        await kv.set(templateId, template);
+      }
+    }
+    
+    // Replace variables in subject and body
+    if (variables) {
+      for (const [key, value] of Object.entries(variables)) {
+        const regex = new RegExp(`\\{\\{${key}\\}\\}`, 'g');
+        finalSubject = finalSubject.replace(regex, value || '');
+        finalBody = finalBody.replace(regex, value || '');
+      }
+    }
+    
+    if (!to || !finalSubject || !finalBody) {
       return res.status(400).json({ error: 'Missing required fields: to, subject, body' });
     }
     
@@ -67,7 +93,7 @@ export default async function handler(req, res) {
     const trackingId = `email-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     
     // Add tracking pixel if requested
-    let htmlBody = body.replace(/\n/g, '<br>');
+    let htmlBody = finalBody.replace(/\n/g, '<br>');
     if (trackOpens) {
       const trackingPixel = `<img src="${BASE_URL}/api/crm/track-open?id=${trackingId}" width="1" height="1" style="display:none;" />`;
       htmlBody += trackingPixel;
@@ -87,7 +113,7 @@ export default async function handler(req, res) {
     const emailOptions = {
       from: 'AutoPosterPro <support@autoposterpro.com>',
       to: to,
-      subject: subject,
+      subject: finalSubject,
       html: fullHtml
     };
     
@@ -115,8 +141,10 @@ export default async function handler(req, res) {
       id: trackingId,
       leadId: leadId || null,
       to,
-      subject,
-      body,
+      subject: finalSubject,
+      body: finalBody,
+      templateId: templateId || null,
+      variables: variables || null,
       sender: sender || 'System',
       attachments: attachments || [],
       sentAt: new Date().toISOString(),
@@ -135,7 +163,7 @@ export default async function handler(req, res) {
         lead.emails = lead.emails || [];
         lead.emails.unshift({
           id: trackingId,
-          subject,
+          subject: finalSubject,
           sentAt: new Date().toISOString(),
           opened: false,
           attachments: attachments || []
@@ -144,7 +172,7 @@ export default async function handler(req, res) {
         lead.activities = lead.activities || [];
         lead.activities.unshift({
           type: 'email',
-          content: `Email sent: "${subject}"${attachments?.length ? ` (with ${attachments.length} attachment${attachments.length > 1 ? 's' : ''})` : ''}`,
+          content: `Email sent: "${finalSubject}"${attachments?.length ? ` (with ${attachments.length} attachment${attachments.length > 1 ? 's' : ''})` : ''}`,
           time: new Date().toISOString()
         });
         

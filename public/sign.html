@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Agreement - AutoPosterPro</title>
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --bg: #0f0a1a;
+      --card: #1a1425;
+      --text: #fff;
+      --text-dim: #a1a1aa;
+      --border: #2d2640;
+      --green: #22c55e;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+    
+    .logo span { color: #f97316; }
+    
+    .agreement-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    
+    .agreement-header {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .agreement-header h1 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+    
+    .agreement-meta {
+      display: flex;
+      gap: 24px;
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    
+    .agreement-content {
+      padding: 24px;
+      max-height: 400px;
+      overflow-y: auto;
+      background: var(--bg);
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    
+    .signature-section {
+      padding: 24px;
+      border-top: 1px solid var(--border);
+    }
+    
+    .signature-section h3 {
+      font-size: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .signature-pad {
+      width: 100%;
+      height: 150px;
+      background: white;
+      border-radius: 8px;
+      cursor: crosshair;
+    }
+    
+    .signature-type {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .signature-type button {
+      flex: 1;
+      padding: 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      cursor: pointer;
+    }
+    
+    .signature-type button.active {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    
+    .typed-signature {
+      font-family: 'Brush Script MT', cursive;
+      font-size: 32px;
+      padding: 20px;
+      background: white;
+      color: #000;
+      border-radius: 8px;
+      text-align: center;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 16px;
+      background: var(--green);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+    
+    .btn:hover { filter: brightness(1.1); }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    
+    .checkbox-group input {
+      margin-top: 4px;
+    }
+    
+    .checkbox-group label {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    
+    .success-message {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    
+    .success-message.show { display: block; }
+    .success-message i {
+      font-size: 64px;
+      color: var(--green);
+      margin-bottom: 20px;
+    }
+    
+    .success-message h2 {
+      margin-bottom: 12px;
+    }
+    
+    .error-message {
+      background: rgba(239, 68, 68, 0.2);
+      color: #f87171;
+      padding: 16px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    
+    .loading { display: none; }
+    .loading.show { display: block; }
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="logo">Auto<span>Poster</span>Pro</div>
+      <p style="color: var(--text-dim);">Software License Agreement</p>
+    </div>
+    
+    <div class="agreement-card">
+      <div id="agreementView">
+        <div class="agreement-header">
+          <h1 id="agreementTitle">Loading...</h1>
+          <div class="agreement-meta">
+            <span><i class="fas fa-building"></i> <span id="dealerName">-</span></span>
+            <span><i class="fas fa-user"></i> <span id="contactName">-</span></span>
+            <span><i class="fas fa-globe"></i> <span id="country">-</span></span>
+          </div>
+        </div>
+        
+        <div class="agreement-content" id="agreementContent">
+          Loading agreement...
+        </div>
+        
+        <div class="signature-section">
+          <h3>Digital Signature</h3>
+          
+          <div id="errorMessage" class="error-message" style="display: none;"></div>
+          
+          <div class="form-group">
+            <label>Your Full Name *</label>
+            <input type="text" class="form-control" id="signerName" placeholder="John Smith">
+          </div>
+          
+          <div class="form-group">
+            <label>Your Title (optional)</label>
+            <input type="text" class="form-control" id="signerTitle" placeholder="Owner / General Manager">
+          </div>
+          
+          <div class="form-group">
+            <label>Signature Type</label>
+            <div class="signature-type">
+              <button class="active" onclick="setSignatureType('typed')">Type Signature</button>
+              <button onclick="setSignatureType('draw')">Draw Signature</button>
+            </div>
+          </div>
+          
+          <div class="form-group" id="typedSignatureGroup">
+            <label>Type your name to sign</label>
+            <input type="text" class="form-control" id="typedSignature" placeholder="Your signature" oninput="updateTypedPreview()">
+            <div class="typed-signature" id="typedPreview" style="margin-top: 12px; min-height: 60px;"></div>
+          </div>
+          
+          <div class="form-group" id="drawSignatureGroup" style="display: none;">
+            <label>Draw your signature</label>
+            <canvas class="signature-pad" id="signaturePad"></canvas>
+            <button style="margin-top: 8px; padding: 8px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 4px; color: var(--text); cursor: pointer;" onclick="clearSignature()">Clear</button>
+          </div>
+          
+          <div class="checkbox-group">
+            <input type="checkbox" id="agreeTerms">
+            <label for="agreeTerms">I have read and agree to the terms of this End User License Agreement. I understand this is a legally binding contract.</label>
+          </div>
+          
+          <button class="btn" id="signButton" onclick="signAgreement()">
+            <i class="fas fa-signature"></i> Sign Agreement
+          </button>
+        </div>
+      </div>
+      
+      <div class="success-message" id="successMessage">
+        <i class="fas fa-check-circle"></i>
+        <h2>Agreement Signed Successfully!</h2>
+        <p style="color: var(--text-dim);">Thank you for signing. A copy has been sent to your email.</p>
+        <p style="margin-top: 20px;">
+          <a href="https://autoposterpro.com" style="color: var(--primary);">Return to AutoPosterPro</a>
+        </p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const agreementId = window.location.pathname.split('/').pop();
+    const token = urlParams.get('token');
+    
+    let signatureType = 'typed';
+    let canvas, ctx;
+    let isDrawing = false;
+    let agreement = null;
+    
+    // Load agreement
+    async function loadAgreement() {
+      try {
+        const res = await fetch(`/api/agreements?id=${agreementId}`);
+        const data = await res.json();
+        
+        if (data.error) {
+          showError(data.error);
+          return;
+        }
+        
+        agreement = data.agreement;
+        
+        document.getElementById('agreementTitle').textContent = agreement.title;
+        document.getElementById('dealerName').textContent = agreement.dealerName;
+        document.getElementById('contactName').textContent = agreement.contactName;
+        document.getElementById('country').textContent = agreement.country === 'CA' ? 'Canada' : 'United States';
+        document.getElementById('agreementContent').textContent = agreement.content;
+        
+        if (agreement.status === 'signed') {
+          showSuccess();
+        }
+      } catch (e) {
+        showError('Failed to load agreement');
+      }
+    }
+    
+    function setSignatureType(type) {
+      signatureType = type;
+      document.querySelectorAll('.signature-type button').forEach(b => b.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      document.getElementById('typedSignatureGroup').style.display = type === 'typed' ? 'block' : 'none';
+      document.getElementById('drawSignatureGroup').style.display = type === 'draw' ? 'block' : 'none';
+      
+      if (type === 'draw') {
+        initCanvas();
+      }
+    }
+    
+    function updateTypedPreview() {
+      const value = document.getElementById('typedSignature').value;
+      document.getElementById('typedPreview').textContent = value;
+    }
+    
+    function initCanvas() {
+      canvas = document.getElementById('signaturePad');
+      ctx = canvas.getContext('2d');
+      
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      
+      canvas.addEventListener('mousedown', startDrawing);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDrawing);
+      canvas.addEventListener('mouseout', stopDrawing);
+      
+      canvas.addEventListener('touchstart', startDrawing);
+      canvas.addEventListener('touchmove', draw);
+      canvas.addEventListener('touchend', stopDrawing);
+    }
+    
+    function startDrawing(e) {
+      isDrawing = true;
+      ctx.beginPath();
+      const pos = getPosition(e);
+      ctx.moveTo(pos.x, pos.y);
+    }
+    
+    function draw(e) {
+      if (!isDrawing) return;
+      e.preventDefault();
+      const pos = getPosition(e);
+      ctx.lineTo(pos.x, pos.y);
+      ctx.stroke();
+    }
+    
+    function stopDrawing() {
+      isDrawing = false;
+    }
+    
+    function getPosition(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+      };
+    }
+    
+    function clearSignature() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    
+    async function signAgreement() {
+      const signerName = document.getElementById('signerName').value.trim();
+      const signerTitle = document.getElementById('signerTitle').value.trim();
+      const agreeTerms = document.getElementById('agreeTerms').checked;
+      
+      if (!signerName) {
+        showError('Please enter your full name');
+        return;
+      }
+      
+      if (!agreeTerms) {
+        showError('Please agree to the terms');
+        return;
+      }
+      
+      let signature;
+      if (signatureType === 'typed') {
+        signature = document.getElementById('typedSignature').value.trim() || signerName;
+      } else {
+        signature = canvas.toDataURL();
+      }
+      
+      if (!signature) {
+        showError('Please provide your signature');
+        return;
+      }
+      
+      document.getElementById('signButton').disabled = true;
+      document.getElementById('signButton').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Signing...';
+      
+      try {
+        const res = await fetch('/api/agreements', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: agreementId,
+            token: token,
+            signature: signature,
+            signerName: signerName,
+            signerTitle: signerTitle
+          })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          showSuccess();
+        } else {
+          showError(data.error || 'Failed to sign agreement');
+          document.getElementById('signButton').disabled = false;
+          document.getElementById('signButton').innerHTML = '<i class="fas fa-signature"></i> Sign Agreement';
+        }
+      } catch (e) {
+        showError('Failed to sign agreement');
+        document.getElementById('signButton').disabled = false;
+        document.getElementById('signButton').innerHTML = '<i class="fas fa-signature"></i> Sign Agreement';
+      }
+    }
+    
+    function showError(message) {
+      const el = document.getElementById('errorMessage');
+      el.textContent = message;
+      el.style.display = 'block';
+    }
+    
+    function showSuccess() {
+      document.getElementById('agreementView').style.display = 'none';
+      document.getElementById('successMessage').classList.add('show');
+    }
+    
+    // Init
+    loadAgreement();
+  </script>
+</body>
+</html>
