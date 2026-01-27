@@ -7,8 +7,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const BASE_URL = process.env.NEXT_PUBLIC_URL || 'https://autoposterpro.com';
-
+const BASE_URL = process.env.NEXT_PUBLIC_URL || 'https://www.autoposterpro.com';
 // Available sales attachments
 const SALES_ATTACHMENTS = {
   'pitch-deck': {
