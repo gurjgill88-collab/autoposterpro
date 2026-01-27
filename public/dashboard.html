@@ -1096,8 +1096,8 @@
       </div>
       
       <div class="tabs">
-        <button class="tab active" data-tab="inbox">Sent</button>
-        <button class="tab" data-tab="tracking">Open Tracking</button>
+        <button class="tab active" data-tab="sent" onclick="showEmailTab('sent')">Sent</button>
+        <button class="tab" data-tab="tracking" onclick="showEmailTab('tracking')">Open Tracking</button>
       </div>
       
       <div class="card">
@@ -1108,8 +1108,8 @@
                 <th>To</th>
                 <th>Subject</th>
                 <th>Sent</th>
-                <th>Opened</th>
-                <th>Actions</th>
+                <th>Status</th>
+                <th>Opened At</th>
               </tr>
             </thead>
             <tbody id="emailsTable">
@@ -1878,25 +1878,39 @@
     }
     
     // ============ EMAILS ============
+    let currentEmailTab = 'sent';
+    
+    function showEmailTab(tab) {
+      currentEmailTab = tab;
+      document.querySelectorAll('#page-email .tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`#page-email .tab[data-tab="${tab}"]`).classList.add('active');
+      loadEmails();
+    }
+    
     async function loadEmails() {
       try {
         const data = await api('/api/email/stats');
         const tbody = document.getElementById('emailsTable');
         
-        if (data.emails?.length) {
-          tbody.innerHTML = data.emails.map(e => `
+        let emails = data.emails || [];
+        
+        // Filter based on tab
+        if (currentEmailTab === 'tracking') {
+          emails = emails.filter(e => e.opened);
+        }
+        
+        if (emails.length) {
+          tbody.innerHTML = emails.map(e => `
             <tr>
               <td>${e.to || '-'}</td>
               <td>${e.subject || '-'}</td>
               <td>${e.sentAt ? new Date(e.sentAt).toLocaleString() : '-'}</td>
-              <td>${e.opens > 0 ? '<span class="badge badge-green">Opened</span>' : '<span class="badge badge-gray">Not opened</span>'}</td>
-              <td>
-                ${e.clicks > 0 ? '<span class="badge badge-purple">Clicked</span>' : ''}
-              </td>
+              <td>${e.opened ? `<span class="badge badge-green">Opened (${e.openCount || 1}x)</span>` : '<span class="badge badge-gray">Not opened</span>'}</td>
+              <td>${e.openedAt ? new Date(e.openedAt).toLocaleString() : '-'}</td>
             </tr>
           `).join('');
         } else {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim);">No emails sent yet.</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim);">No emails yet.</td></tr>';
         }
       } catch (e) {
         console.error('Emails error:', e);
