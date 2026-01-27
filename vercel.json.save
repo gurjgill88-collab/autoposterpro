@@ -1,4 +1,4 @@
-{
+{ "source": "/dashboard", "destination": "/dashboard.html" },{
   "version": 2,
   "buildCommand": "",
   "outputDirectory": "public",
@@ -11,11 +11,8 @@
     { "source": "/pricing", "destination": "/pricing.html" },
     { "source": "/success", "destination": "/success.html" },
     { "source": "/sales", "destination": "/sales.html" },
-    { "source": "/crm", "destination": "/dashboard.html" },
-    { "source": "/dashboard", "destination": "/dashboard.html" },
-    { "source": "/analytics", "destination": "/analytics.html" },
-    { "source": "/sign/:id", "destination": "/sign.html" },
-    { "source": "/invoice/:id", "destination": "/invoice.html" }
+    { "source": "/crm", "destination": "/sales.html" },
+    { "source": "/analytics", "destination": "/analytics.html" }
   ],
   "headers": [
     {
