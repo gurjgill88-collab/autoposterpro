@@ -3,6 +3,10 @@
 import { kv } from '../../lib/redis.js';
 
 export default async function handler(req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  
+  if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -83,47 +87,4 @@ export default async function handler(req, res) {
         bounced: totalBounced,
         openRate: parseFloat(openRate),
         clickRate: parseFloat(clickRate),
-        bounceRate: parseFloat(bounceRate)
-      },
-      emails: emails.slice(0, 100), // Return last 100 emails
-      period
-    });
-
-  } catch (error) {
-    console.error('Email stats error:', error);
-    return res.status(500).json({ error: 'Failed to fetch email stats' });
-  }
-}
-
-function getCutoffDate(period) {
-  const now = new Date();
-  
-  switch (period) {
-    case '7d':
-      return new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    case '30d':
-      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-    case '90d':
-      return new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
-    case 'all':
-      return new Date(0);
-    default:
-      return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-  }
-}
-
-async function verifyAuth(req) {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-
-  try {
-    const token = authHeader.replace('Bearer ', '');
-    const payload = JSON.parse(Buffer.from(token, 'base64').toString());
-    if (payload.exp && payload.exp < Date.now()) return null;
-    return payload;
-  } catch {
-    return null;
-  }
-}
+        bounceRate: parseFloat(bounceRate) that's fine it's better that way
