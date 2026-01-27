@@ -10,9 +10,9 @@ export default async function handler(req, res) {
   
   try {
     const { licenseKey, deviceId } = req.body;
-    if (!licenseKey || !deviceId) return res.status(400).json({ valid: false, error: 'License key and device ID required' });
+    if (!licenseKey || !deviceId) return res.status(400).json({ valid: false, error: 'Missing fields' });
     
-    const license = await kv.get(`licenses:${licenseKey}`);
+    const license = await kv.get('licenses:' + licenseKey);
     if (!license) return res.status(401).json({ valid: false, error: 'Invalid license key' });
     if (!license.active) return res.status(401).json({ valid: false, error: 'License deactivated' });
     
@@ -25,7 +25,7 @@ export default async function handler(req, res) {
       license.activatedAt = new Date().toISOString();
     }
     license.lastUsed = new Date().toISOString();
-    await kv.set(`licenses:${licenseKey}`, license);
+    await kv.set('licenses:' + licenseKey, license);
     
     return res.status(200).json({ valid: true, dealerName: license.dealerName || '' });
   } catch (error) {
