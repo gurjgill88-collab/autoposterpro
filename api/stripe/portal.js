@@ -2,7 +2,7 @@
 // Allows customers to manage their subscription and payment methods
 
 import Stripe from 'stripe';
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/redis.js';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 

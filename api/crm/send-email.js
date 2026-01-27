@@ -1,7 +1,7 @@
 // CRM Email API
 // Send emails with open tracking and attachments
 
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/redis.js';
 import { Resend } from 'resend';
 import { promises as fs } from 'fs';
 import path from 'path';

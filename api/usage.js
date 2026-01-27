@@ -1,7 +1,7 @@
 // Usage Tracking API
 // Track extension usage per dealer/user
 
-import { kv } from '@vercel/kv';
+import { kv } from '../lib/redis.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

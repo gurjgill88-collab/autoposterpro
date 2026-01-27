@@ -1,7 +1,7 @@
 // Agreements API
 // Digital signature and EULA management
 
-import { kv } from '@vercel/kv';
+import { kv } from '../lib/redis.js';
 
 // EULA Templates
 const EULA_TEMPLATES = {

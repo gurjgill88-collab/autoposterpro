@@ -1,7 +1,7 @@
 // CRM Leads API
 // Full CRUD for leads with notes, activities, and email tracking
 
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/redis.js';
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');

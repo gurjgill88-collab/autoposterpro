@@ -1,7 +1,7 @@
 // Contact Form API
 // Stores contact submissions and triggers immediate follow-up email
 
-import { kv } from '@vercel/kv';
+import { kv } from '../lib/redis.js';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);

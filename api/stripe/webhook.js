@@ -2,7 +2,7 @@
 // Handles subscription events: created, updated, cancelled, payment failed
 
 import Stripe from 'stripe';
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/redis.js';
 import { Resend } from 'resend';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);

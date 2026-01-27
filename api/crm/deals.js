@@ -1,7 +1,7 @@
 // Deals/Pipeline API
 // Sales pipeline management
 
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/redis.js';
 
 const STAGES = [
   'lead',

@@ -2,7 +2,7 @@
 // Run this daily via Vercel Cron to process email sequences
 // Add to vercel.json: "crons": [{ "path": "/api/cron/process-sequences", "schedule": "0 9 * * *" }]
 
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/redis.js';
 import { Resend } from 'resend';
 
 const resend = new Resend(process.env.RESEND_API_KEY);

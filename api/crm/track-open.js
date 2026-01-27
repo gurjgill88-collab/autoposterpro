@@ -1,7 +1,7 @@
 // Email Open Tracking Pixel
 // Tracks when emails are opened
 
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/redis.js';
 
 // 1x1 transparent GIF
 const TRACKING_PIXEL = Buffer.from(
