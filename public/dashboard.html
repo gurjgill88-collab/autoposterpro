@@ -1578,6 +1578,7 @@
         case 'usage': loadUsage(); break;
         case 'agreements': loadAgreements(); break;
         case 'billing': loadInvoices(); break;
+        case 'email': loadEmails(); break;
       }
     }
     
@@ -1873,6 +1874,33 @@
         loadLicenses();
       } catch (e) {
         alert('Error updating license');
+      }
+    }
+    
+    // ============ EMAILS ============
+    async function loadEmails() {
+      try {
+        const data = await api('/api/email/stats');
+        const tbody = document.getElementById('emailsTable');
+        
+        if (data.emails?.length) {
+          tbody.innerHTML = data.emails.map(e => `
+            <tr>
+              <td>${e.to || '-'}</td>
+              <td>${e.subject || '-'}</td>
+              <td>${e.sentAt ? new Date(e.sentAt).toLocaleString() : '-'}</td>
+              <td>${e.opens > 0 ? '<span class="badge badge-green">Opened</span>' : '<span class="badge badge-gray">Not opened</span>'}</td>
+              <td>
+                ${e.clicks > 0 ? '<span class="badge badge-purple">Clicked</span>' : ''}
+              </td>
+            </tr>
+          `).join('');
+        } else {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim);">No emails sent yet.</td></tr>';
+        }
+      } catch (e) {
+        console.error('Emails error:', e);
+        document.getElementById('emailsTable').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim);">No emails sent yet.</td></tr>';
       }
     }
     
