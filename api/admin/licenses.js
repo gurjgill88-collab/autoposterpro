@@ -1,7 +1,7 @@
 // Admin API for License Management
 // Protected by admin key
 
-import { kv } from '@vercel/kv';
+import { kv } from '../../lib/redis.js';
 
 export default async function handler(req, res) {
   // CORS headers
