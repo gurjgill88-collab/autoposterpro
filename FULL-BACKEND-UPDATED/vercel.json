@@ -1,0 +1,41 @@
+{
+  "version": 2,
+  "buildCommand": "",
+  "outputDirectory": "public",
+  "rewrites": [
+    { "source": "/privacy", "destination": "/privacy.html" },
+    { "source": "/terms", "destination": "/terms.html" },
+    { "source": "/about", "destination": "/about.html" },
+    { "source": "/contact", "destination": "/contact.html" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/pricing", "destination": "/pricing.html" },
+    { "source": "/success", "destination": "/success.html" },
+    { "source": "/sales", "destination": "/sales.html" },
+    { "source": "/crm", "destination": "/dashboard-unified.html" },
+    { "source": "/dashboard", "destination": "/dashboard-unified.html" },
+    { "source": "/app", "destination": "/dashboard-unified.html" },
+    { "source": "/old-crm", "destination": "/dashboard.html" },
+    { "source": "/analytics", "destination": "/analytics.html" },
+    { "source": "/sign/:id", "destination": "/sign.html" },
+    { "source": "/invoice", "destination": "/invoice.html" },
+    { "source": "/billing", "destination": "/billing.html" },
+    { "source": "/account", "destination": "/billing.html" },
+    { "source": "/settings", "destination": "/settings.html" }
+  ],
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET, POST, PUT, DELETE, OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type, Authorization" }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/process-sequences",
+      "schedule": "0 9 * * *"
+    }
+  ]
+}

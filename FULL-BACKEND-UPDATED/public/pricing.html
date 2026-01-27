@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing | AutoPosterPro</title>
+  <script src="https://js.stripe.com/v3/"></script>
+  <style>
+    :root {
+      --purple: #7c3aed;
+      --purple-dark: #6d28d9;
+      --orange: #f97316;
+      --green: #22c55e;
+      --bg: #0f0a1a;
+      --card: #1a1425;
+      --text: #fff;
+      --text-dim: #a1a1aa;
+      --border: #2d2640;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .logo { font-size: 28px; font-weight: 800; }
+    .logo span { color: var(--orange); }
+    
+    .hero {
+      text-align: center;
+      padding: 60px 20px 40px;
+    }
+    .hero h1 { font-size: 48px; margin-bottom: 15px; font-weight: 800; }
+    .hero h1 span { color: var(--orange); }
+    .hero p { color: var(--text-dim); font-size: 18px; max-width: 600px; margin: 0 auto 20px; }
+    
+    .promo-banner {
+      display: inline-block;
+      background: linear-gradient(135deg, rgba(249, 115, 22, 0.2) 0%, rgba(124, 58, 237, 0.2) 100%);
+      border: 1px solid var(--orange);
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 15px;
+      color: var(--orange);
+      font-weight: 600;
+    }
+    .promo-banner a { color: var(--orange); text-decoration: underline; }
+    
+    .pricing-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 900px) {
+      .pricing-container { grid-template-columns: 1fr; max-width: 450px; }
+    }
+    
+    .pricing-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 36px 28px;
+      position: relative;
+      transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    }
+    .pricing-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--purple);
+      box-shadow: 0 20px 40px rgba(124, 58, 237, 0.2);
+    }
+    .pricing-card.popular {
+      border-color: var(--orange);
+      transform: scale(1.05);
+      box-shadow: 0 25px 50px rgba(249, 115, 22, 0.25);
+    }
+    .pricing-card.popular:hover {
+      transform: scale(1.05) translateY(-8px);
+    }
+    .popular-badge {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--orange) 0%, #ea580c 100%);
+      color: white;
+      padding: 6px 20px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    
+    .plan-icon {
+      font-size: 40px;
+      margin-bottom: 16px;
+    }
+    .plan-name {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .plan-desc {
+      color: var(--text-dim);
+      font-size: 14px;
+      margin-bottom: 24px;
+    }
+    
+    .price {
+      margin-bottom: 8px;
+    }
+    .price-amount {
+      font-size: 52px;
+      font-weight: 800;
+      color: var(--purple);
+      line-height: 1;
+    }
+    .pricing-card.popular .price-amount {
+      color: var(--orange);
+    }
+    .price-currency {
+      font-size: 24px;
+      vertical-align: top;
+      color: var(--purple);
+    }
+    .pricing-card.popular .price-currency {
+      color: var(--orange);
+    }
+    .price-period {
+      color: var(--text-dim);
+      font-size: 16px;
+    }
+    
+    .user-badge {
+      display: inline-block;
+      background: rgba(124, 58, 237, 0.15);
+      color: var(--purple);
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 16px 0 24px;
+    }
+    .pricing-card.popular .user-badge {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--orange);
+    }
+    
+    .features {
+      list-style: none;
+      margin-bottom: 28px;
+    }
+    .features li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .features li:last-child { border-bottom: none; }
+    .check { 
+      color: var(--green); 
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+      color: white;
+    }
+    .btn-orange {
+      background: linear-gradient(135deg, var(--orange) 0%, #ea580c 100%);
+      color: white;
+    }
+    .btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+    
+    .custom-section {
+      text-align: center;
+      padding: 50px 20px;
+      max-width: 700px;
+      margin: 0 auto;
+    }
+    .custom-section h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    .custom-section p {
+      color: var(--text-dim);
+      margin-bottom: 24px;
+    }
+    .btn-outline {
+      display: inline-block;
+      background: transparent;
+      border: 2px solid var(--purple);
+      color: var(--purple);
+      padding: 14px 32px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .btn-outline:hover {
+      background: var(--purple);
+      color: white;
+    }
+    
+    .features-grid {
+      max-width: 1000px;
+      margin: 40px auto;
+      padding: 40px 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    @media (max-width: 700px) {
+      .features-grid { grid-template-columns: 1fr; }
+    }
+    .feature-item {
+      text-align: center;
+    }
+    .feature-icon {
+      font-size: 36px;
+      margin-bottom: 12px;
+    }
+    .feature-item h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    .feature-item p {
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+    
+    .guarantee {
+      text-align: center;
+      padding: 40px 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .guarantee h3 { color: var(--green); margin-bottom: 10px; font-size: 20px; }
+    .guarantee p { color: var(--text-dim); font-size: 14px; }
+    
+    .faq {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+    }
+    .faq h2 { text-align: center; margin-bottom: 30px; font-size: 28px; }
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .faq-q {
+      padding: 20px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 500;
+    }
+    .faq-q:hover { background: rgba(124, 58, 237, 0.1); }
+    .faq-a {
+      padding: 0 20px;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s, padding 0.3s;
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+    .faq-item.open .faq-a {
+      max-height: 200px;
+      padding: 0 20px 20px;
+    }
+    .faq-item.open .faq-arrow { transform: rotate(180deg); }
+    .faq-arrow { transition: transform 0.3s; }
+    
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+    .footer a { color: var(--purple); text-decoration: none; margin: 0 10px; }
+    
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal.show { display: flex; }
+    .modal-content {
+      background: var(--card);
+      border-radius: 20px;
+      padding: 32px;
+      max-width: 480px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+    .modal-header h3 { font-size: 22px; }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 28px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-close:hover { color: var(--text); }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: var(--text-dim);
+    }
+    .form-group input {
+      width: 100%;
+      padding: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 15px;
+    }
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--purple);
+    }
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .selected-plan {
+      background: linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%);
+      border: 1px solid var(--purple);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+    .selected-plan .plan { font-weight: 700; font-size: 18px; margin-bottom: 4px; }
+    .selected-plan .price { color: var(--purple); font-size: 15px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" style="text-decoration:none;color:white;">
+      <div class="logo">Auto<span>Poster</span>Pro</div>
+    </a>
+  </div>
+  
+  <div class="hero">
+    <h1>Plans That <span>Scale</span> With You</h1>
+    <p>From individual sellers to large dealer groups. Post smarter, sell faster.</p>
+    <div class="promo-banner">💰 <a href="/contact">Contact us</a> for current promotions!</div>
+  </div>
+  
+  <div class="pricing-container">
+    <!-- Starter Plan -->
+    <div class="pricing-card">
+      <div class="plan-icon">🚀</div>
+      <div class="plan-name">Starter</div>
+      <div class="plan-desc">For individual sellers</div>
+      
+      <div class="price">
+        <span class="price-currency">$</span>
+        <span class="price-amount">219</span>
+        <span class="price-period">/month</span>
+      </div>
+      
+      <div class="user-badge">👤 1 User</div>
+      
+      <ul class="features">
+        <li><span class="check">✓</span> AI-Powered Descriptions</li>
+        <li><span class="check">✓</span> Automated Image Transfer</li>
+        <li><span class="check">✓</span> One-Click Posting</li>
+        <li><span class="check">✓</span> Works With Any Dealer Site</li>
+        <li><span class="check">✓</span> Email Support</li>
+        <li><span class="check">✓</span> Free Setup Assistance</li>
+      </ul>
+      
+      <button class="btn btn-primary" onclick="openCheckout('starter')">
+        Get Started
+      </button>
+    </div>
+    
+    <!-- Professional Plan -->
+    <div class="pricing-card popular">
+      <div class="popular-badge">MOST POPULAR</div>
+      <div class="plan-icon">⚡</div>
+      <div class="plan-name">Professional</div>
+      <div class="plan-desc">For mid-size dealerships</div>
+      
+      <div class="price">
+        <span class="price-currency">$</span>
+        <span class="price-amount">1,199</span>
+        <span class="price-period">/month</span>
+      </div>
+      
+      <div class="user-badge">👥 6 - 11 Users</div>
+      
+      <ul class="features">
+        <li><span class="check">✓</span> AI-Powered Descriptions</li>
+        <li><span class="check">✓</span> Automated Image Transfer</li>
+        <li><span class="check">✓</span> One-Click Posting</li>
+        <li><span class="check">✓</span> Works With Any Dealer Site</li>
+        <li><span class="check">✓</span> Email Support</li>
+        <li><span class="check">✓</span> Team Onboarding Session</li>
+        <li><span class="check">✓</span> Priority Support</li>
+      </ul>
+      
+      <button class="btn btn-orange" onclick="openCheckout('professional')">
+        Get Started
+      </button>
+    </div>
+    
+    <!-- Enterprise Plan -->
+    <div class="pricing-card">
+      <div class="plan-icon">🏢</div>
+      <div class="plan-name">Enterprise</div>
+      <div class="plan-desc">For large dealerships & groups</div>
+      
+      <div class="price">
+        <span class="price-currency">$</span>
+        <span class="price-amount">1,799</span>
+        <span class="price-period">/month</span>
+      </div>
+      
+      <div class="user-badge">👥 12 - 20 Users</div>
+      
+      <ul class="features">
+        <li><span class="check">✓</span> AI-Powered Descriptions</li>
+        <li><span class="check">✓</span> Automated Image Transfer</li>
+        <li><span class="check">✓</span> One-Click Posting</li>
+        <li><span class="check">✓</span> Works With Any Dealer Site</li>
+        <li><span class="check">✓</span> Email Support</li>
+        <li><span class="check">✓</span> Dedicated Account Manager</li>
+        <li><span class="check">✓</span> Custom Team Training</li>
+      </ul>
+      
+      <button class="btn btn-primary" onclick="openCheckout('enterprise')">
+        Get Started
+      </button>
+    </div>
+  </div>
+  
+  <div class="custom-section">
+    <h3>Need More Than 20 Users?</h3>
+    <p>We offer custom plans for large dealer groups with multiple locations. Let's build a plan that fits your needs.</p>
+    <a href="/contact" class="btn-outline">Contact Us for Custom Pricing →</a>
+  </div>
+  
+  <div class="features-grid">
+    <div class="feature-item">
+      <div class="feature-icon">🤖</div>
+      <h4>AI-Powered Descriptions</h4>
+      <p>Unique descriptions for every vehicle. Avoid shadowbans and stand out from the crowd.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">🖼️</div>
+      <h4>Automated Images</h4>
+      <p>All your vehicle photos transfer automatically. No manual downloading and uploading.</p>
+    </div>
+    <div class="feature-item">
+      <div class="feature-icon">⏱️</div>
+      <h4>Post in Seconds</h4>
+      <p>What used to take 15 minutes now takes 30 seconds. Post more, sell more.</p>
+    </div>
+  </div>
+  
+  <div class="guarantee">
+    <h3>✓ 60-Day Cancellation Policy</h3>
+    <p>We believe in our product. Provide 60 days written notice to cancel anytime. No hidden fees, no surprises.</p>
+  </div>
+  
+  <div class="faq">
+    <h2>Frequently Asked Questions</h2>
+    
+    <div class="faq-item">
+      <div class="faq-q">
+        How does the setup work?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        After you subscribe, we'll schedule a screen share to install the Chrome extension and walk you through how to use it. Most dealers are posting vehicles within 30 minutes!
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-q">
+        Will this work with my dealer website?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        Yes! AutoPosterPro works with virtually any dealer website including DealerSocket, VinSolutions, Dealertrack, and custom sites. If we encounter any issues, we'll fix them for free.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-q">
+        What about Facebook shadowbans?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        Our AI generates unique descriptions for each vehicle, which helps avoid Facebook's duplicate content detection. We also follow best practices like reasonable posting frequency.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-q">
+        How do I cancel?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        Email support@autoposterpro.com with 60 days notice. Your access continues until the end of your paid period.
+      </div>
+    </div>
+    
+    <div class="faq-item">
+      <div class="faq-q">
+        Can I upgrade or downgrade my plan?
+        <span class="faq-arrow">▼</span>
+      </div>
+      <div class="faq-a">
+        Absolutely! Contact us anytime to adjust your plan. We'll prorate the difference.
+      </div>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p>© 2026 AutoPosterPro. All rights reserved.</p>
+    <p>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/contact">Contact</a>
+    </p>
+  </div>
+  
+  <!-- Checkout Modal -->
+  <div class="modal" id="checkoutModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Complete Your Order</h3>
+        <button class="modal-close" onclick="closeCheckout()">×</button>
+      </div>
+      
+      <div class="selected-plan">
+        <div class="plan" id="selectedPlan">Starter Plan</div>
+        <div class="price" id="selectedPrice">$219/month • 1 user</div>
+      </div>
+      
+      <form id="checkoutForm">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name *</label>
+            <input type="text" name="firstName" required>
+          </div>
+          <div class="form-group">
+            <label>Last Name *</label>
+            <input type="text" name="lastName" required>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Dealership Name *</label>
+          <input type="text" name="dealerName" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Dealer Registry # *</label>
+          <input type="text" name="dealerNumber" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Email Address *</label>
+          <input type="email" name="email" required>
+        </div>
+        
+        <div class="form-group">
+          <label>Phone Number</label>
+          <input type="tel" name="phone">
+        </div>
+        
+        <div class="form-group">
+          <label>Business Address</label>
+          <input type="text" name="address">
+        </div>
+        
+        <input type="hidden" name="plan" id="planInput" value="starter">
+        
+        <button type="submit" class="btn btn-orange" id="checkoutBtn" style="margin-top: 20px;">
+          Continue to Payment →
+        </button>
+        
+        <p style="text-align: center; margin-top: 15px; font-size: 12px; color: var(--text-dim);">
+          🔒 Secure checkout powered by Stripe
+        </p>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    // FAQ toggle
+    document.querySelectorAll('.faq-item').forEach(item => {
+      item.querySelector('.faq-q').addEventListener('click', () => {
+        item.classList.toggle('open');
+      });
+    });
+    
+    // Plan details
+    const plans = {
+      starter: { name: 'Starter', price: '$219/month', users: '1 user' },
+      professional: { name: 'Professional', price: '$1,199/month', users: '6-11 users' },
+      enterprise: { name: 'Enterprise', price: '$1,799/month', users: '12-20 users' }
+    };
+    
+    // Checkout modal
+    let selectedPlan = 'starter';
+    
+    function openCheckout(plan) {
+      selectedPlan = plan;
+      document.getElementById('planInput').value = plan;
+      
+      const p = plans[plan];
+      document.getElementById('selectedPlan').textContent = p.name + ' Plan';
+      document.getElementById('selectedPrice').textContent = p.price + ' • ' + p.users;
+      
+      document.getElementById('checkoutModal').classList.add('show');
+    }
+    
+    function closeCheckout() {
+      document.getElementById('checkoutModal').classList.remove('show');
+    }
+    
+    // Close modal on outside click
+    document.getElementById('checkoutModal').addEventListener('click', (e) => {
+      if (e.target.id === 'checkoutModal') closeCheckout();
+    });
+    
+    // Handle checkout form
+    document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById('checkoutBtn');
+      btn.disabled = true;
+      btn.textContent = 'Processing...';
+      
+      const formData = new FormData(e.target);
+      const data = {
+        dealerName: formData.get('dealerName'),
+        dealerNumber: formData.get('dealerNumber'),
+        contactName: `${formData.get('firstName')} ${formData.get('lastName')}`,
+        contactEmail: formData.get('email'),
+        contactPhone: formData.get('phone') || '',
+        address: formData.get('address') || '',
+        plan: formData.get('plan')
+      };
+      
+      try {
+        const response = await fetch('/api/stripe/create-checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.url) {
+          window.location.href = result.url;
+        } else {
+          throw new Error(result.error || 'Failed to create checkout');
+        }
+      } catch (error) {
+        alert('Error: ' + error.message);
+        btn.disabled = false;
+        btn.textContent = 'Continue to Payment →';
+      }
+    });
+  </script>
+  <!-- Vinny Chat Widget -->
+  <script src="/js/chat-widget.js"></script>
+</body>
+</html>

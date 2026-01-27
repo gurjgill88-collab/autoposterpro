@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoPosterPro - Dashboard</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0f0a1a; color: #fff; min-height: 100vh; }
+    
+    /* Login */
+    .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-box { background: #1a1425; border-radius: 16px; padding: 40px; width: 100%; max-width: 400px; }
+    .login-box h1 { font-size: 28px; margin-bottom: 8px; }
+    .login-box h1 span { color: #f97316; }
+    .login-box > p { color: #a1a1aa; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-group label { display: block; font-size: 14px; color: #a1a1aa; margin-bottom: 6px; }
+    .form-group input, .form-group select { width: 100%; padding: 12px; background: #0f0a1a; border: 1px solid #3d3650; border-radius: 8px; color: #fff; font-size: 14px; }
+    .form-group input:focus { outline: none; border-color: #7c3aed; }
+    .btn { padding: 12px 24px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .btn-primary { background: #7c3aed; color: white; width: 100%; }
+    .btn-primary:hover { background: #6d28d9; }
+    .btn-secondary { background: #2d2640; color: white; }
+    .btn-sm { padding: 8px 16px; font-size: 13px; }
+    .btn-danger { background: #dc2626; color: white; }
+    .error-box { background: #7f1d1d; border: 1px solid #dc2626; color: #fecaca; padding: 12px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
+    
+    /* App Layout */
+    .app { display: none; min-height: 100vh; }
+    .app.active { display: flex; }
+    
+    /* Sidebar */
+    .sidebar { width: 250px; background: #1a1425; border-right: 1px solid #3d3650; display: flex; flex-direction: column; }
+    .sidebar-header { padding: 20px; border-bottom: 1px solid #3d3650; }
+    .sidebar-header h2 { font-size: 20px; }
+    .sidebar-header h2 span { color: #f97316; }
+    .sidebar-user { padding: 16px 20px; border-bottom: 1px solid #3d3650; background: #2d2640; }
+    .sidebar-user .name { font-weight: 600; font-size: 15px; }
+    .sidebar-user .role { font-size: 12px; color: #7c3aed; text-transform: uppercase; margin-top: 2px; }
+    .sidebar-nav { flex: 1; padding: 12px; overflow-y: auto; }
+    .nav-group { margin-bottom: 20px; }
+    .nav-group-title { font-size: 11px; color: #6b7280; text-transform: uppercase; padding: 8px 12px; letter-spacing: 0.5px; }
+    .nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; color: #a1a1aa; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .nav-item:hover { background: #2d2640; color: white; }
+    .nav-item.active { background: #7c3aed; color: white; }
+    .sidebar-footer { padding: 16px; border-top: 1px solid #3d3650; }
+    
+    /* Main */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+    .topbar { padding: 16px 24px; border-bottom: 1px solid #3d3650; display: flex; align-items: center; justify-content: space-between; }
+    .topbar h1 { font-size: 22px; }
+    .content { flex: 1; padding: 24px; overflow-y: auto; }
+    
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .stat { background: #1a1425; padding: 20px; border-radius: 12px; }
+    .stat .label { font-size: 13px; color: #a1a1aa; }
+    .stat .value { font-size: 28px; font-weight: 700; margin-top: 4px; }
+    .stat .value.green { color: #22c55e; }
+    .stat .value.purple { color: #7c3aed; }
+    .stat .value.orange { color: #f97316; }
+    
+    /* Card/Table */
+    .card { background: #1a1425; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+    .card-header { padding: 16px 20px; border-bottom: 1px solid #3d3650; display: flex; align-items: center; justify-content: space-between; }
+    .card-header h3 { font-size: 16px; }
+    .card-body { padding: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #3d3650; }
+    th { font-size: 12px; color: #a1a1aa; text-transform: uppercase; }
+    tr:hover { background: rgba(124, 58, 237, 0.1); }
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+    .badge-green { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .badge-red { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .badge-purple { background: rgba(124, 58, 237, 0.2); color: #a78bfa; }
+    .badge-blue { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .badge-yellow { background: rgba(234, 179, 8, 0.2); color: #facc15; }
+    .badge-gray { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+    
+    /* Modal */
+    .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; align-items: center; justify-content: center; }
+    .modal-bg.show { display: flex; }
+    .modal { background: #1a1425; border-radius: 16px; padding: 24px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; }
+    .modal h3 { margin-bottom: 20px; }
+    .modal-actions { display: flex; gap: 12px; margin-top: 24px; }
+    .modal-actions .btn { flex: 1; }
+    
+    /* Role Info Box */
+    .role-box { background: #2d2640; padding: 16px; border-radius: 8px; margin: 16px 0; }
+    .role-box h4 { color: #7c3aed; margin-bottom: 8px; font-size: 14px; }
+    .role-box ul { padding-left: 20px; font-size: 13px; color: #a1a1aa; }
+    .role-box li { margin: 4px 0; }
+    
+    /* Form Row */
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    
+    /* Empty state */
+    .empty { text-align: center; padding: 40px; color: #6b7280; }
+  </style>
+</head>
+<body>
+  <!-- LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-box">
+      <h1>Auto<span>Poster</span>Pro</h1>
+      <p>Sign in to your dashboard</p>
+      <div id="loginError" class="error-box" style="display:none;"></div>
+      <form id="loginForm">
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="loginEmail" required placeholder="you@company.com">
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+      </form>
+      <p style="margin-top:20px;text-align:center;font-size:13px;color:#6b7280;">Admin login: Use your admin secret as password</p>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div class="app" id="app">
+    <aside class="sidebar">
+      <div class="sidebar-header"><h2>Auto<span>Poster</span>Pro</h2></div>
+      <div class="sidebar-user">
+        <div class="name" id="displayName">User</div>
+        <div class="role" id="displayRole">Role</div>
+      </div>
+      <nav class="sidebar-nav" id="nav"></nav>
+      <div class="sidebar-footer">
+        <button class="btn btn-secondary" style="width:100%;" onclick="logout()">Sign Out</button>
+      </div>
+    </aside>
+    <main class="main">
+      <div class="topbar">
+        <h1 id="pageTitle">Overview</h1>
+        <div id="pageActions"></div>
+      </div>
+      <div class="content" id="content"></div>
+    </main>
+  </div>
+
+  <!-- ADD USER MODAL -->
+  <div class="modal-bg" id="userModal">
+    <div class="modal">
+      <h3 id="userModalTitle">Add Team Member</h3>
+      <form id="userForm">
+        <input type="hidden" id="editUserId">
+        <div class="form-row">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="userFirstName" required>
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="userLastName" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="userEmailInput" required>
+        </div>
+        <div class="form-group">
+          <label>Role</label>
+          <select id="userRoleSelect" required onchange="updateRoleInfo()">
+            <option value="">Select role...</option>
+            <option value="admin">Admin</option>
+            <option value="manager">Manager</option>
+            <option value="sales">Sales</option>
+            <option value="accounting">Accounting</option>
+            <option value="license_admin">License Admin</option>
+            <option value="viewer">Viewer</option>
+          </select>
+        </div>
+        <div class="role-box" id="roleInfoBox" style="display:none;"></div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="userPasswordInput" minlength="8" placeholder="Min 8 characters">
+          <small style="color:#6b7280;font-size:12px;">Required for new users. Leave blank to keep existing.</small>
+        </div>
+        <div class="form-group">
+          <label>Status</label>
+          <select id="userStatusSelect">
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeUserModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+<script>
+// ==== CONFIG ====
+const ROLES = {
+  admin: { label: 'Admin', color: 'purple', access: ['overview','sales','licenses','billing','team','reports','settings'], desc: ['Full system access','Manage all team members','License management','Billing & invoices','System settings'] },
+  manager: { label: 'Manager', color: 'blue', access: ['overview','sales','team','reports'], desc: ['Sales pipeline access','View team members','Sales reports','Cannot access billing'] },
+  sales: { label: 'Sales', color: 'green', access: ['overview','sales'], desc: ['CRM & deals access','Lead management','Email templates','Cannot see team or billing'] },
+  accounting: { label: 'Accounting', color: 'yellow', access: ['overview','billing','reports'], desc: ['Billing access','Invoice management','Financial reports','No sales access'] },
+  license_admin: { label: 'License Admin', color: 'purple', access: ['overview','licenses'], desc: ['License management only','Activate/deactivate licenses','Reset device bindings'] },
+  viewer: { label: 'Viewer', color: 'gray', access: ['overview'], desc: ['Read-only dashboard','Cannot edit anything'] }
+};
+
+const NAV = [
+  { section: 'Main', items: [{ id: 'overview', icon: '📊', label: 'Overview', access: 'overview' }] },
+  { section: 'Sales', items: [
+    { id: 'deals', icon: '💼', label: 'Deals', access: 'sales' },
+    { id: 'leads', icon: '👤', label: 'Leads', access: 'sales' },
+    { id: 'emails', icon: '✉️', label: 'Email Center', access: 'sales' }
+  ]},
+  { section: 'Operations', items: [
+    { id: 'licenses', icon: '🔑', label: 'Licenses', access: 'licenses' },
+    { id: 'billing', icon: '💳', label: 'Billing', access: 'billing' }
+  ]},
+  { section: 'Management', items: [
+    { id: 'team', icon: '👥', label: 'Team', access: 'team' },
+    { id: 'reports', icon: '📈', label: 'Reports', access: 'reports' }
+  ]},
+  { section: 'System', items: [
+    { id: 'settings', icon: '⚙️', label: 'Settings', access: 'settings' }
+  ]}
+];
+
+// ==== STATE ====
+let user = null;
+let page = 'overview';
+let teamUsers = [];
+let licenses = [];
+
+// ==== INIT ====
+document.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('app_user');
+  if (saved) {
+    user = JSON.parse(saved);
+    showApp();
+  }
+  document.getElementById('loginForm').addEventListener('submit', handleLogin);
+  document.getElementById('userForm').addEventListener('submit', handleUserSave);
+});
+
+// ==== AUTH ====
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  const errEl = document.getElementById('loginError');
+  errEl.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+    
+    user = data.user;
+    localStorage.setItem('app_user', JSON.stringify(user));
+    localStorage.setItem('app_token', data.token);
+    showApp();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.style.display = 'block';
+  }
+}
+
+function logout() {
+  user = null;
+  localStorage.removeItem('app_user');
+  localStorage.removeItem('app_token');
+  document.getElementById('app').classList.remove('active');
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+// ==== APP ====
+function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('app').classList.add('active');
+  document.getElementById('displayName').textContent = user.name || user.email;
+  document.getElementById('displayRole').textContent = ROLES[user.role]?.label || user.role;
+  buildNav();
+  goTo('overview');
+}
+
+function buildNav() {
+  const navEl = document.getElementById('nav');
+  const access = ROLES[user.role]?.access || [];
+  let html = '';
+  
+  NAV.forEach(group => {
+    const visible = group.items.filter(i => access.includes(i.access));
+    if (!visible.length) return;
+    
+    html += `<div class="nav-group"><div class="nav-group-title">${group.section}</div>`;
+    visible.forEach(item => {
+      html += `<div class="nav-item" data-page="${item.id}" onclick="goTo('${item.id}')">${item.icon} ${item.label}</div>`;
+    });
+    html += '</div>';
+  });
+  
+  navEl.innerHTML = html;
+}
+
+function goTo(p) {
+  page = p;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.toggle('active', el.dataset.page === p));
+  
+  const titles = { overview:'Overview', deals:'Deals', leads:'Leads', emails:'Email Center', licenses:'Licenses', billing:'Billing', team:'Team Management', reports:'Reports', settings:'Settings' };
+  document.getElementById('pageTitle').textContent = titles[p] || p;
+  
+  loadPage(p);
+}
+
+async function loadPage(p) {
+  const content = document.getElementById('content');
+  const actions = document.getElementById('pageActions');
+  actions.innerHTML = '';
+
+  switch(p) {
+    case 'overview': content.innerHTML = renderOverview(); break;
+    case 'team': 
+      actions.innerHTML = `<button class="btn btn-primary btn-sm" onclick="openUserModal()">+ Add Member</button>`;
+      content.innerHTML = await renderTeam(); 
+      break;
+    case 'licenses':
+      actions.innerHTML = `<button class="btn btn-primary btn-sm" onclick="alert('Create license feature')">+ Create License</button>`;
+      content.innerHTML = await renderLicenses();
+      break;
+    case 'deals': content.innerHTML = renderDeals(); break;
+    case 'emails': content.innerHTML = renderEmails(); break;
+    case 'billing': content.innerHTML = renderBilling(); break;
+    case 'reports': content.innerHTML = renderReports(); break;
+    case 'settings': content.innerHTML = renderSettings(); break;
+    default: content.innerHTML = `<div class="card"><div class="card-body"><p>${p} coming soon</p></div></div>`;
+  }
+}
+
+// ==== RENDER PAGES ====
+function renderOverview() {
+  return `
+    <div class="stats">
+      <div class="stat"><div class="label">MRR</div><div class="value green">$2,475</div></div>
+      <div class="stat"><div class="label">Active Licenses</div><div class="value purple">25</div></div>
+      <div class="stat"><div class="label">Open Deals</div><div class="value orange">12</div></div>
+      <div class="stat"><div class="label">Team Members</div><div class="value">${teamUsers.length || 4}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Welcome, ${user.name || user.email}!</h3></div>
+      <div class="card-body">
+        <p style="color:#a1a1aa;">You're logged in as <span class="badge badge-${ROLES[user.role]?.color}">${ROLES[user.role]?.label}</span></p>
+        <p style="margin-top:12px;color:#6b7280;">Use the sidebar to navigate between modules based on your access level.</p>
+      </div>
+    </div>
+  `;
+}
+
+async function renderTeam() {
+  try {
+    const token = localStorage.getItem('app_token');
+    const res = await fetch('/api/team/users', { headers: { 'Authorization': `Bearer ${token}` }});
+    if (res.ok) teamUsers = (await res.json()).users || [];
+  } catch(e) { console.error(e); }
+
+  const roleGuide = Object.entries(ROLES).map(([k,v]) => 
+    `<div style="background:#2d2640;padding:12px;border-radius:8px;"><strong style="color:#7c3aed;">${v.label}</strong><p style="font-size:12px;color:#a1a1aa;margin-top:4px;">${v.desc[0]}</p></div>`
+  ).join('');
+
+  const rows = teamUsers.length ? teamUsers.map(u => `
+    <tr>
+      <td><strong>${u.firstName || ''} ${u.lastName || ''}</strong><br><small style="color:#6b7280;">${u.email}</small></td>
+      <td><span class="badge badge-${ROLES[u.role]?.color || 'gray'}">${ROLES[u.role]?.label || u.role}</span></td>
+      <td><span class="badge badge-${u.status === 'active' ? 'green' : 'red'}">${u.status}</span></td>
+      <td>${u.lastLogin ? new Date(u.lastLogin).toLocaleDateString() : 'Never'}</td>
+      <td><button class="btn btn-secondary btn-sm" onclick="editUser('${u.id}')">Edit</button></td>
+    </tr>
+  `).join('') : '<tr><td colspan="5" class="empty">No team members yet. Click "+ Add Member" to get started.</td></tr>';
+
+  return `
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-header"><h3>Role Guide</h3></div>
+      <div class="card-body" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;">${roleGuide}</div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Team Members</h3><span style="color:#6b7280;">${teamUsers.length} total</span></div>
+      <table>
+        <thead><tr><th>Name</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function renderLicenses() {
+  try {
+    const token = localStorage.getItem('app_token');
+    const res = await fetch('/api/admin/licenses', { headers: { 'Authorization': `Bearer ${token}` }});
+    if (res.ok) licenses = (await res.json()).licenses || [];
+  } catch(e) { console.error(e); }
+
+  const active = licenses.filter(l => l.active).length;
+  const rows = licenses.length ? licenses.map(l => `
+    <tr>
+      <td><code style="background:#2d2640;padding:4px 8px;border-radius:4px;font-size:12px;">${l.key}</code></td>
+      <td>${l.dealerName || '-'}</td>
+      <td>${l.email || '-'}</td>
+      <td><span class="badge badge-blue">${l.plan || 'monthly'}</span></td>
+      <td><span class="badge badge-${l.active ? 'green' : 'red'}">${l.active ? 'Active' : 'Inactive'}</span></td>
+      <td><button class="btn btn-secondary btn-sm" onclick="toggleLicense('${l.key}',${!l.active})">${l.active ? 'Disable' : 'Enable'}</button></td>
+    </tr>
+  `).join('') : '<tr><td colspan="6" class="empty">No licenses yet.</td></tr>';
+
+  return `
+    <div class="stats">
+      <div class="stat"><div class="label">Total</div><div class="value">${licenses.length}</div></div>
+      <div class="stat"><div class="label">Active</div><div class="value green">${active}</div></div>
+      <div class="stat"><div class="label">Monthly</div><div class="value">${licenses.filter(l=>l.plan==='monthly').length}</div></div>
+      <div class="stat"><div class="label">Annual</div><div class="value purple">${licenses.filter(l=>l.plan==='annual').length}</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>All Licenses</h3></div>
+      <table>
+        <thead><tr><th>Key</th><th>Dealer</th><th>Email</th><th>Plan</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderDeals() {
+  return `
+    <div class="card">
+      <div class="card-header"><h3>Deals Pipeline</h3><button class="btn btn-primary btn-sm">+ New Deal</button></div>
+      <table>
+        <thead><tr><th>Dealer</th><th>Contact</th><th>Stage</th><th>Value</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr><td><strong>ABC Motors</strong></td><td>John Smith</td><td><span class="badge badge-yellow">Proposal</span></td><td>$1,188</td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+          <tr><td><strong>XYZ Auto</strong></td><td>Jane Doe</td><td><span class="badge badge-purple">Demo</span></td><td>$99</td><td><button class="btn btn-secondary btn-sm">View</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderEmails() {
+  return `
+    <div class="stats">
+      <div class="stat"><div class="label">Sent This Month</div><div class="value">47</div></div>
+      <div class="stat"><div class="label">Open Rate</div><div class="value green">42%</div></div>
+      <div class="stat"><div class="label">Reply Rate</div><div class="value purple">12%</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Send Email</h3></div>
+      <div class="card-body">
+        <div class="form-group">
+          <label>Template</label>
+          <select style="width:100%;padding:12px;background:#0f0a1a;border:1px solid #3d3650;border-radius:8px;color:white;">
+            <option>Select template...</option>
+            <option>Cold Introduction</option>
+            <option>Follow Up #1</option>
+            <option>Demo Confirmation</option>
+            <option>Proposal</option>
+          </select>
+        </div>
+        <button class="btn btn-primary" style="margin-top:12px;">Compose Email</button>
+      </div>
+    </div>
+  `;
+}
+
+function renderBilling() {
+  return `
+    <div class="stats">
+      <div class="stat"><div class="label">MRR</div><div class="value green">$2,475</div></div>
+      <div class="stat"><div class="label">ARR</div><div class="value purple">$29,700</div></div>
+      <div class="stat"><div class="label">Outstanding</div><div class="value orange">$198</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><h3>Recent Transactions</h3></div>
+      <table>
+        <thead><tr><th>Date</th><th>Customer</th><th>Amount</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>Jan 27</td><td>ABC Motors</td><td>$99.00</td><td><span class="badge badge-green">Paid</span></td></tr>
+          <tr><td>Jan 25</td><td>XYZ Auto</td><td>$948.00</td><td><span class="badge badge-green">Paid</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderReports() {
+  return `
+    <div class="stats">
+      <div class="stat"><div class="label">MRR Growth</div><div class="value green">+12%</div></div>
+      <div class="stat"><div class="label">New Customers</div><div class="value">3</div></div>
+      <div class="stat"><div class="label">Churn Rate</div><div class="value orange">2%</div></div>
+    </div>
+    <div class="card"><div class="card-body" style="height:200px;display:flex;align-items:center;justify-content:center;color:#6b7280;">Charts coming soon</div></div>
+  `;
+}
+
+function renderSettings() {
+  return `
+    <div class="card" style="max-width:500px;">
+      <div class="card-header"><h3>Settings</h3></div>
+      <div class="card-body">
+        <div class="form-group"><label>Company Name</label><input value="AutoPosterPro" style="width:100%;padding:12px;background:#0f0a1a;border:1px solid #3d3650;border-radius:8px;color:white;"></div>
+        <div class="form-group"><label>Support Email</label><input value="support@autoposterpro.com" style="width:100%;padding:12px;background:#0f0a1a;border:1px solid #3d3650;border-radius:8px;color:white;"></div>
+        <button class="btn btn-primary">Save</button>
+      </div>
+    </div>
+  `;
+}
+
+// ==== USER MODAL ====
+function openUserModal(id = null) {
+  document.getElementById('userModalTitle').textContent = id ? 'Edit Team Member' : 'Add Team Member';
+  document.getElementById('userForm').reset();
+  document.getElementById('editUserId').value = '';
+  document.getElementById('roleInfoBox').style.display = 'none';
+  document.getElementById('userPasswordInput').required = !id;
+
+  if (id) {
+    const u = teamUsers.find(x => x.id === id);
+    if (u) {
+      document.getElementById('editUserId').value = u.id;
+      document.getElementById('userFirstName').value = u.firstName || '';
+      document.getElementById('userLastName').value = u.lastName || '';
+      document.getElementById('userEmailInput').value = u.email || '';
+      document.getElementById('userRoleSelect').value = u.role || '';
+      document.getElementById('userStatusSelect').value = u.status || 'active';
+      updateRoleInfo();
+    }
+  }
+  document.getElementById('userModal').classList.add('show');
+}
+
+function closeUserModal() {
+  document.getElementById('userModal').classList.remove('show');
+}
+
+function editUser(id) { openUserModal(id); }
+
+function updateRoleInfo() {
+  const role = document.getElementById('userRoleSelect').value;
+  const box = document.getElementById('roleInfoBox');
+  if (role && ROLES[role]) {
+    box.innerHTML = `<h4>${ROLES[role].label}</h4><ul>${ROLES[role].desc.map(d => `<li>${d}</li>`).join('')}</ul>`;
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+async function handleUserSave(e) {
+  e.preventDefault();
+  const id = document.getElementById('editUserId').value;
+  const data = {
+    firstName: document.getElementById('userFirstName').value,
+    lastName: document.getElementById('userLastName').value,
+    email: document.getElementById('userEmailInput').value,
+    role: document.getElementById('userRoleSelect').value,
+    status: document.getElementById('userStatusSelect').value
+  };
+  const pw = document.getElementById('userPasswordInput').value;
+  if (pw) data.password = pw;
+
+  try {
+    const token = localStorage.getItem('app_token');
+    const res = await fetch(id ? `/api/team/users/${id}` : '/api/team/users', {
+      method: id ? 'PUT' : 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) throw new Error((await res.json()).error || 'Failed');
+    closeUserModal();
+    goTo('team');
+  } catch(err) { alert('Error: ' + err.message); }
+}
+
+async function toggleLicense(key, active) {
+  try {
+    const token = localStorage.getItem('app_token');
+    await fetch(`/api/admin/licenses/${key}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ active })
+    });
+    goTo('licenses');
+  } catch(e) { alert('Error'); }
+}
+</script>
+</body>
+</html>

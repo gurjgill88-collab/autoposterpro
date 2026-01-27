@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice - AutoPosterPro</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f3f4f6;
+      padding: 40px;
+    }
+    
+    .invoice {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    
+    .invoice-header {
+      background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+      color: white;
+      padding: 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+    }
+    
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    
+    .logo span { color: #f97316; }
+    
+    .invoice-title {
+      text-align: right;
+    }
+    
+    .invoice-title h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    
+    .invoice-number {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+    
+    .invoice-body {
+      padding: 40px;
+    }
+    
+    .invoice-info {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    
+    .info-section h3 {
+      color: #6b7280;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    
+    .info-section p {
+      color: #1f2937;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+    }
+    
+    .invoice-table th {
+      background: #f9fafb;
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 12px;
+      text-transform: uppercase;
+      color: #6b7280;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .invoice-table td {
+      padding: 16px;
+      border-bottom: 1px solid #e5e7eb;
+      color: #1f2937;
+    }
+    
+    .invoice-table .amount {
+      text-align: right;
+      font-weight: 600;
+    }
+    
+    .invoice-totals {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 40px;
+    }
+    
+    .totals-table {
+      width: 300px;
+    }
+    
+    .totals-table tr td {
+      padding: 8px 0;
+    }
+    
+    .totals-table tr td:last-child {
+      text-align: right;
+      font-weight: 500;
+    }
+    
+    .totals-table .total-row {
+      border-top: 2px solid #1f2937;
+      font-size: 20px;
+      font-weight: 700;
+    }
+    
+    .totals-table .total-row td {
+      padding-top: 16px;
+    }
+    
+    .invoice-status {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .status-paid {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .status-pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .status-overdue {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .invoice-footer {
+      background: #f9fafb;
+      padding: 24px 40px;
+      text-align: center;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .invoice-footer p {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+    
+    .pay-button {
+      display: inline-block;
+      background: #7c3aed;
+      color: white;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 20px;
+    }
+    
+    .pay-button:hover {
+      background: #6d28d9;
+    }
+    
+    .notes {
+      background: #f9fafb;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    
+    .notes h4 {
+      color: #6b7280;
+      font-size: 12px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    
+    .notes p {
+      color: #4b5563;
+      font-size: 14px;
+    }
+    
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .invoice {
+        box-shadow: none;
+      }
+      .pay-button {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="invoice" id="invoice">
+    <div class="invoice-header">
+      <div class="logo">Auto<span>Poster</span>Pro</div>
+      <div class="invoice-title">
+        <h1>INVOICE</h1>
+        <p class="invoice-number" id="invoiceNumber">#INV-00000000</p>
+      </div>
+    </div>
+    
+    <div class="invoice-body">
+      <div class="invoice-info">
+        <div class="info-section">
+          <h3>From</h3>
+          <p>
+            <strong>AutoPosterPro Inc.</strong><br>
+            123 Tech Street<br>
+            Toronto, ON M5V 1A1<br>
+            Canada
+          </p>
+        </div>
+        
+        <div class="info-section">
+          <h3>Bill To</h3>
+          <p id="billTo">
+            <strong>Loading...</strong>
+          </p>
+        </div>
+        
+        <div class="info-section">
+          <h3>Invoice Details</h3>
+          <p>
+            <strong>Date:</strong> <span id="invoiceDate">-</span><br>
+            <strong>Due Date:</strong> <span id="dueDate">-</span><br>
+            <strong>Status:</strong> <span class="invoice-status status-pending" id="invoiceStatus">Pending</span>
+          </p>
+        </div>
+      </div>
+      
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th>Qty</th>
+            <th>Price</th>
+            <th class="amount">Amount</th>
+          </tr>
+        </thead>
+        <tbody id="invoiceItems">
+          <tr>
+            <td>Loading...</td>
+            <td>-</td>
+            <td>-</td>
+            <td class="amount">-</td>
+          </tr>
+        </tbody>
+      </table>
+      
+      <div class="invoice-totals">
+        <table class="totals-table">
+          <tr>
+            <td>Subtotal</td>
+            <td id="subtotal">$0.00</td>
+          </tr>
+          <tr>
+            <td>Tax (13% HST)</td>
+            <td id="tax">$0.00</td>
+          </tr>
+          <tr class="total-row">
+            <td>Total</td>
+            <td id="total">$0.00</td>
+          </tr>
+        </table>
+      </div>
+      
+      <div class="notes" id="notesSection" style="display: none;">
+        <h4>Notes</h4>
+        <p id="invoiceNotes"></p>
+      </div>
+    </div>
+    
+    <div class="invoice-footer">
+      <p>
+        Thank you for your business!<br>
+        Questions? Contact support@autoposterpro.com
+      </p>
+      <a href="#" class="pay-button" id="payButton" style="display: none;">
+        Pay Now
+      </a>
+    </div>
+  </div>
+  
+  <script>
+    const invoiceId = new URLSearchParams(window.location.search).get('id');
+    
+    async function loadInvoice() {
+      if (!invoiceId) {
+        document.getElementById('invoiceItems').innerHTML = '<tr><td colspan="4">Invoice ID not provided</td></tr>';
+        return;
+      }
+      
+      try {
+        const res = await fetch(`/api/invoices?id=${invoiceId}`);
+        const data = await res.json();
+        
+        if (data.error) {
+          document.getElementById('invoiceItems').innerHTML = `<tr><td colspan="4">${data.error}</td></tr>`;
+          return;
+        }
+        
+        renderInvoice(data.invoice);
+      } catch (e) {
+        console.error('Failed to load invoice:', e);
+      }
+    }
+    
+    function renderInvoice(inv) {
+      document.getElementById('invoiceNumber').textContent = `#${inv.invoiceNumber || inv.id}`;
+      
+      document.getElementById('billTo').innerHTML = `
+        <strong>${inv.dealerName}</strong><br>
+        ${inv.contactName ? inv.contactName + '<br>' : ''}
+        ${inv.contactEmail || ''}
+      `;
+      
+      document.getElementById('invoiceDate').textContent = formatDate(inv.createdAt);
+      document.getElementById('dueDate').textContent = formatDate(inv.dueDate);
+      
+      const statusEl = document.getElementById('invoiceStatus');
+      statusEl.textContent = inv.status.charAt(0).toUpperCase() + inv.status.slice(1);
+      statusEl.className = `invoice-status status-${inv.status}`;
+      
+      // Items
+      const items = inv.items || [{ description: inv.description || 'Subscription', amount: inv.amount }];
+      document.getElementById('invoiceItems').innerHTML = items.map(item => `
+        <tr>
+          <td>${item.description}</td>
+          <td>1</td>
+          <td>$${item.amount.toFixed(2)}</td>
+          <td class="amount">$${item.amount.toFixed(2)}</td>
+        </tr>
+      `).join('');
+      
+      // Totals
+      const subtotal = inv.amount;
+      const tax = subtotal * 0.13;
+      const total = subtotal + tax;
+      
+      document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+      document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+      document.getElementById('total').textContent = `$${total.toFixed(2)} ${inv.currency || 'CAD'}`;
+      
+      // Notes
+      if (inv.notes) {
+        document.getElementById('notesSection').style.display = 'block';
+        document.getElementById('invoiceNotes').textContent = inv.notes;
+      }
+      
+      // Pay button
+      if (inv.status === 'pending') {
+        document.getElementById('payButton').style.display = 'inline-block';
+        document.getElementById('payButton').href = inv.paymentUrl || 'https://autoposterpro.com/pay';
+      }
+    }
+    
+    function formatDate(dateStr) {
+      if (!dateStr) return '-';
+      return new Date(dateStr).toLocaleDateString('en-CA', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
+    
+    loadInvoice();
+  </script>
+</body>
+</html>
