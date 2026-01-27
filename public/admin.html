@@ -306,14 +306,37 @@
         <div class="form-row">
           <div class="form-group">
             <label>Plan *</label>
-            <select id="agPlan">
-              <option value="monthly">Monthly (Month-to-Month)</option>
-              <option value="annual">Annual (12-Month Contract)</option>
+            <select id="agPlan" onchange="updatePricing()">
+              <option value="starter">Starter - $219/mo</option>
+              <option value="professional">Professional - $1,199/mo</option>
+              <option value="enterprise">Enterprise - $1,799/mo</option>
             </select>
           </div>
           <div class="form-group">
-            <label>Price (CAD/month) *</label>
-            <input type="text" id="agPrice" placeholder="99.00" value="99.00">
+            <label>Monthly Price (CAD) *</label>
+            <input type="number" id="agPrice" placeholder="219.00" value="219">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Setup Fee (CAD) *</label>
+            <input type="number" id="agSetupFee" placeholder="299.00" value="299">
+          </div>
+          <div class="form-group">
+            <label>Discount % (optional)</label>
+            <input type="number" id="agDiscount" placeholder="0" value="0" min="0" max="100" onchange="applyDiscount()">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Final Monthly (after discount)</label>
+            <input type="text" id="agFinalPrice" value="$219.00" readonly style="background: #2d2640;">
+          </div>
+          <div class="form-group">
+            <label>Final Setup (after discount)</label>
+            <input type="text" id="agFinalSetup" value="$299.00" readonly style="background: #2d2640;">
           </div>
         </div>
         
@@ -345,7 +368,9 @@
           <p><strong>Contact:</strong> <span id="prevContact"></span></p>
           <p><strong>Email:</strong> <span id="prevEmail"></span></p>
           <p><strong>Plan:</strong> <span id="prevPlan"></span></p>
-          <p><strong>Price:</strong> CAD $<span id="prevPrice"></span>/month</p>
+          <p><strong>Monthly:</strong> CAD $<span id="prevPrice"></span>/month</p>
+          <p><strong>Setup Fee:</strong> CAD $<span id="prevSetup"></span> (one-time)</p>
+          <p><strong>Discount:</strong> <span id="prevDiscount"></span>%</p>
           <p style="margin-top:15px; font-size:12px; color:var(--orange);">
             ⚠️ Agreement includes 60-day cancellation policy. Email: support@autoposterpro.com
           </p>
@@ -380,6 +405,36 @@
     const API_BASE = '/api';
     let adminKey = '';
     let currentDealerData = null;
+    
+    // Pricing tiers
+    const PLANS = {
+      starter: { name: 'Starter', monthly: 219, setup: 299 },
+      professional: { name: 'Professional', monthly: 1199, setup: 1000 },
+      enterprise: { name: 'Enterprise', monthly: 1799, setup: 2000 }
+    };
+    
+    // Update pricing when plan changes
+    function updatePricing() {
+      const plan = document.getElementById('agPlan').value;
+      const planData = PLANS[plan];
+      document.getElementById('agPrice').value = planData.monthly;
+      document.getElementById('agSetupFee').value = planData.setup;
+      document.getElementById('agDiscount').value = 0;
+      applyDiscount();
+    }
+    
+    // Apply discount to both monthly and setup
+    function applyDiscount() {
+      const discount = parseFloat(document.getElementById('agDiscount').value) || 0;
+      const monthly = parseFloat(document.getElementById('agPrice').value) || 0;
+      const setup = parseFloat(document.getElementById('agSetupFee').value) || 0;
+      
+      const finalMonthly = monthly * (1 - discount / 100);
+      const finalSetup = setup * (1 - discount / 100);
+      
+      document.getElementById('agFinalPrice').value = '$' + finalMonthly.toFixed(2);
+      document.getElementById('agFinalSetup').value = '$' + finalSetup.toFixed(2);
+    }
     
     // Set default start date to today
     document.getElementById('agStartDate').value = new Date().toISOString().split('T')[0];
@@ -536,8 +591,14 @@
       const phone = document.getElementById('agPhone').value;
       const address = document.getElementById('agAddress').value;
       const plan = document.getElementById('agPlan').value;
-      const price = document.getElementById('agPrice').value;
+      const price = parseFloat(document.getElementById('agPrice').value) || 0;
+      const setupFee = parseFloat(document.getElementById('agSetupFee').value) || 0;
+      const discount = parseFloat(document.getElementById('agDiscount').value) || 0;
       const startDate = document.getElementById('agStartDate').value;
+      
+      // Calculate final prices
+      const finalPrice = price * (1 - discount / 100);
+      const finalSetup = setupFee * (1 - discount / 100);
       
       if (!dealerName || !dealerNumber || !contactName || !contactEmail || !price) {
         showAlert('Please fill all required fields', 'error');
@@ -563,7 +624,12 @@
             contact_phone: phone,
             address: address,
             plan: plan,
-            price: price,
+            planName: PLANS[plan].name,
+            price: finalPrice.toFixed(2),
+            setupFee: finalSetup.toFixed(2),
+            discount: discount,
+            originalPrice: price,
+            originalSetup: setupFee,
             start_date: startDate
           };
           
@@ -574,8 +640,10 @@
           document.getElementById('prevDealer').textContent = dealerName;
           document.getElementById('prevContact').textContent = contactName;
           document.getElementById('prevEmail').textContent = contactEmail;
-          document.getElementById('prevPlan').textContent = plan === 'annual' ? 'Annual (12 months)' : 'Monthly';
-          document.getElementById('prevPrice').textContent = price;
+          document.getElementById('prevPlan').textContent = PLANS[plan].name;
+          document.getElementById('prevPrice').textContent = finalPrice.toFixed(2);
+          document.getElementById('prevSetup').textContent = finalSetup.toFixed(2);
+          document.getElementById('prevDiscount').textContent = discount;
           document.getElementById('agreementPreview').style.display = 'block';
           
           fetchLicenses();
@@ -638,9 +706,10 @@
   </div>
   
   <div class="box">
-    <p><strong>Plan:</strong> ${data.plan === 'annual' ? 'Annual (12-Month Contract)' : 'Monthly (Month-to-Month)'}</p>
+    <p><strong>Plan:</strong> ${data.planName || data.plan}</p>
     <p><strong>Monthly Fee:</strong> CAD $${data.price}</p>
-    <p><strong>Term:</strong> ${termText}</p>
+    <p><strong>Setup Fee:</strong> CAD $${data.setupFee} (one-time)</p>
+    ${data.discount > 0 ? `<p><strong>Discount Applied:</strong> ${data.discount}%</p>` : ''}
     <p><strong>Start Date:</strong> ${startDate.toLocaleDateString()}</p>
   </div>
   
