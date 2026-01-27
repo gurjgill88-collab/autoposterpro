@@ -1917,10 +1917,12 @@
         document.getElementById('emailsTable').innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text-dim);">No emails sent yet.</td></tr>';
       }
     }
+    
     // ============ TEMPLATES ============
     async function loadTemplates() {
       try {
         const data = await api('/api/crm/templates');
+        templatesCache = data.templates || [];
         const tbody = document.getElementById('templatesTable');
         
         if (data.templates?.length) {
@@ -2281,6 +2283,36 @@
     }
     
     // ============ EMAIL ============
+    // Store loaded templates for quick access
+    let templatesCache = [];
+    
+    async function loadTemplate() {
+      const templateId = document.getElementById('emailTemplate').value;
+      if (!templateId) {
+        document.getElementById('emailSubject').value = '';
+        document.getElementById('emailBody').value = '';
+        return;
+      }
+      
+      // Find template in cache or fetch it
+      let template = templatesCache.find(t => t.id === templateId);
+      
+      if (!template) {
+        try {
+          const data = await api('/api/crm/templates');
+          templatesCache = data.templates || [];
+          template = templatesCache.find(t => t.id === templateId);
+        } catch (e) {
+          console.error('Error loading template:', e);
+        }
+      }
+      
+      if (template) {
+        document.getElementById('emailSubject').value = template.subject || '';
+        document.getElementById('emailBody').value = template.body || '';
+      }
+    }
+    
     async function sendEmail() {
       const email = {
         to: document.getElementById('emailTo').value,
@@ -2401,6 +2433,8 @@
     function useTemplate(id) {
       // Load template into email composer
       showModal('sendEmail');
+      document.getElementById('emailTemplate').value = id;
+      loadTemplate();
     }
     
     function viewAgreement(id) {
