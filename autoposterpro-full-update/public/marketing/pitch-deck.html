@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoPosterPro - Sales Deck</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+    
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #1a1625;
+      color: #fff;
+    }
+    
+    .slide {
+      width: 100%;
+      min-height: 100vh;
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      border-bottom: 4px solid #7c3aed;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .slide::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    
+    .slide-number {
+      position: absolute;
+      bottom: 30px;
+      right: 40px;
+      font-size: 14px;
+      color: #4c3a6e;
+      font-weight: 600;
+    }
+    
+    .logo-small {
+      position: absolute;
+      top: 30px;
+      left: 40px;
+      font-size: 18px;
+      font-weight: 800;
+      color: #7c3aed;
+    }
+    
+    h1 {
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 30px;
+    }
+    
+    h2 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 40px;
+      line-height: 1.2;
+    }
+    
+    h3 {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 25px;
+      color: #c4b5fd;
+    }
+    
+    p {
+      font-size: 24px;
+      line-height: 1.6;
+      color: #d1d5db;
+      max-width: 900px;
+    }
+    
+    .highlight {
+      color: #7c3aed;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    /* Slide 1 - Title */
+    .slide-title {
+      background: linear-gradient(135deg, #1a1625 0%, #2d1f4e 100%);
+      text-align: center;
+    }
+    
+    .slide-title h1 {
+      font-size: 72px;
+    }
+    
+    .tagline {
+      font-size: 28px;
+      color: #c4b5fd;
+      font-style: italic;
+      margin-bottom: 50px;
+    }
+    
+    .contact-info {
+      font-size: 18px;
+      color: #a1a1aa;
+    }
+    
+    .contact-info a {
+      color: #7c3aed;
+      text-decoration: none;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 30px;
+      margin: 40px 0;
+    }
+    
+    .stat-box {
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 20px;
+      padding: 40px 30px;
+      text-align: center;
+    }
+    
+    .stat-box .number {
+      font-size: 56px;
+      font-weight: 900;
+      color: #7c3aed;
+      margin-bottom: 10px;
+    }
+    
+    .stat-box .label {
+      font-size: 16px;
+      color: #a1a1aa;
+    }
+    
+    /* Two Column */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    
+    /* List Styles */
+    .feature-list {
+      list-style: none;
+    }
+    
+    .feature-list li {
+      font-size: 22px;
+      padding: 20px 0;
+      padding-left: 50px;
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .feature-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 20px;
+      width: 32px;
+      height: 32px;
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+    }
+    
+    .problem-list li::before {
+      content: "✕";
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+    
+    /* Comparison Table */
+    .comparison {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+    }
+    
+    .comparison th, .comparison td {
+      padding: 25px 30px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .comparison th {
+      font-size: 18px;
+      color: #a1a1aa;
+      font-weight: 600;
+    }
+    
+    .comparison td {
+      font-size: 20px;
+    }
+    
+    .comparison .them { color: #ef4444; }
+    .comparison .us { color: #22c55e; font-weight: 600; }
+    
+    /* Pricing Cards */
+    .pricing-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin: 40px 0;
+    }
+    
+    .price-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s;
+    }
+    
+    .price-card.featured {
+      border-color: #7c3aed;
+      transform: scale(1.05);
+      background: rgba(124, 58, 237, 0.1);
+    }
+    
+    .price-card h4 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    
+    .price-card .price {
+      font-size: 56px;
+      font-weight: 900;
+      color: #7c3aed;
+    }
+    
+    .price-card .price span {
+      font-size: 20px;
+      color: #a1a1aa;
+      font-weight: 400;
+    }
+    
+    .price-card .setup {
+      font-size: 16px;
+      color: #a1a1aa;
+      margin-top: 10px;
+    }
+    
+    /* Timeline */
+    .timeline {
+      display: flex;
+      justify-content: space-between;
+      margin: 50px 0;
+      position: relative;
+    }
+    
+    .timeline::before {
+      content: '';
+      position: absolute;
+      top: 40px;
+      left: 100px;
+      right: 100px;
+      height: 4px;
+      background: #7c3aed;
+    }
+    
+    .timeline-item {
+      text-align: center;
+      width: 200px;
+    }
+    
+    .timeline-item .circle {
+      width: 80px;
+      height: 80px;
+      background: #7c3aed;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 20px;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .timeline-item h4 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    
+    .timeline-item p {
+      font-size: 14px;
+      color: #a1a1aa;
+    }
+    
+    /* CTA Slide */
+    .slide-cta {
+      background: linear-gradient(135deg, #7c3aed 0%, #5b21b6 100%);
+      text-align: center;
+    }
+    
+    .cta-btn {
+      display: inline-block;
+      background: #fff;
+      color: #7c3aed;
+      padding: 20px 60px;
+      border-radius: 40px;
+      font-size: 24px;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: 40px;
+    }
+    
+    @media print {
+      .slide { page-break-after: always; min-height: 100vh; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Slide 1: Title -->
+  <div class="slide slide-title">
+    <h1 class="gradient-text">AutoPosterPro</h1>
+    <div class="tagline">"Post Smarter. Sell Faster."</div>
+    <p style="margin: 0 auto 40px; font-size: 28px;">Automated Facebook Marketplace Posting for Automotive Dealerships</p>
+    <div class="contact-info">
+      <a href="mailto:support@autoposterpro.com">support@autoposterpro.com</a> | autoposterpro.com
+    </div>
+    <div class="slide-number">1</div>
+  </div>
+
+  <!-- Slide 2: The Opportunity -->
+  <div class="slide">
+    <div class="logo-small">AutoPosterPro</div>
+    <h2>Facebook Marketplace is <span class="highlight">#1</span> for Used Car Sales</h2>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="number">1.1B</div>
+        <div class="label">Monthly Active Users</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">37%</div>
+        <div class="label">Car Buyers Use Facebook</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">$0</div>
+        <div class="label">Listing Fees</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">#1</div>
+        <div class="label">Platform for Used Cars 2024</div>
+      </div>
+    </div>
+    <p>In 2024, Facebook Marketplace became the largest online platform for used car sales, surpassing major classifieds sites. Dealers who master it are selling 15-24+ cars per month through this channel alone.</p>
+    <div class="slide-number">2</div>
+  </div>
+
+  <!-- Slide 3: The Problem -->
+  <div class="slide">
+    <div class="logo-small">AutoPosterPro</div>
+    <h2>Your Team is <span class="highlight">Wasting Valuable Time</span></h2>
+    <div class="two-col">
+      <div>
+        <ul class="feature-list problem-list">
+          <li>2-3 hours per day posting vehicles manually</li>
+          <li>Listings go stale after 3 days, losing visibility</li>
+          <li>Busy salespeople forget to repost or update</li>
+          <li>Inconsistent posting = inconsistent leads</li>
+          <li>Photos, descriptions, pricing—all manual entry</li>
+        </ul>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 120px;">⏰</div>
+        <h3 style="margin-top: 20px;">Time is Money</h3>
+        <p style="font-size: 20px;">Every hour spent posting is an hour not spent closing deals</p>
+      </div>
+    </div>
+    <div class="slide-number">3</div>
+  </div>
+
+  <!-- Slide 4: The Cost of Doing Nothing -->
+  <div class="slide">
+    <div class="logo-small">AutoPosterPro</div>
+    <h2>The <span class="highlight">Hidden Costs</span> of Manual Posting</h2>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="number">520+</div>
+        <div class="label">Hours/Year Lost to Posting</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">$15K+</div>
+        <div class="label">Annual Labor Cost</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">30%</div>
+        <div class="label">Inventory Never Gets Posted</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">???</div>
+        <div class="label">Missed Sales Opportunities</div>
+      </div>
+    </div>
+    <p style="margin-top: 30px;">When your team starts posting but gets pulled away to help a customer, those vehicles sit in limbo. Fresh inventory doesn't get the exposure it deserves. Leads slip through the cracks.</p>
+    <div class="slide-number">4</div>
+  </div>
+
+  <!-- Slide 5: The Solution -->
+  <div class="slide">
+    <div class="logo-small">AutoPosterPro</div>
+    <h2>AutoPosterPro: <span class="highlight">Set It & Forget It</span></h2>
+    <div class="two-col">
+      <div>
+        <ul class="feature-list">
+          <li>Scrapes your inventory automatically</li>
+          <li>Posts vehicles to Facebook Marketplace</li>
+          <li>Refreshes listings to stay visible</li>
+          <li>Works 24/7 without supervision</li>
+          <li>Every vehicle gets maximum exposure</li>
+        </ul>
+      </div>
+      <div style="text-align: center;">
+        <div style="font-size: 120px;">🚀</div>
+        <h3 style="margin-top: 20px;">Automate & Dominate</h3>
+        <p style="font-size: 20px;">Your team focuses on selling, we handle the posting</p>
+      </div>
+    </div>
+    <div class="slide-number">5</div>
+  </div>
+
+  <!-- Slide 6: How It Works -->
+  <div class="slide">
+    <div class="logo-small">AutoPosterPro</div>
+    <h2>Getting Started is <span class="highlight">Simple</span></h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="circle">1</div>
+        <h4>Connect</h4>
+        <p>Link your inventory feed or website</p>
+      </div>
+      <div class="timeline-item">
+        <div class="circle">2</div>
+        <h4>Configure</h4>
+        <p>Set your posting schedule & preferences</p>
+      </div>
+      <div class="timeline-item">
+        <div class="circle">3</div>
+        <h4>Automate</h4>
+        <p>We post your vehicles automatically</p>
+      </div>
+      <div class="timeline-item">
+        <div class="circle">4</div>
+        <h4>Sell</h4>
+        <p>Respond to leads & close deals</p>
+      </div>
+    </div>
+    <p style="text-align: center; margin-top: 40px;">Most dealerships are fully operational within 24-48 hours of signing up.</p>
+    <div class="slide-number">6</div>
+  </div>
+
+  <!-- Slide 7: Why Us vs Competitors -->
+  <div class="slide">
+    <div class="logo-small">AutoPosterPro</div>
+    <h2>Compare the <span class="highlight">Value</span></h2>
+    <table class="comparison">
+      <tr>
+        <th>Feature</th>
+        <th>Third-Party Lead Providers</th>
+        <th>AutoPosterPro</th>
+      </tr>
+      <tr>
+        <td>Monthly Cost</td>
+        <td class="them">$3,000 - $5,000+</td>
+        <td class="us">Starting at $219</td>
+      </tr>
+      <tr>
+        <td>Leads Shared With</td>
+        <td class="them">Multiple Dealerships</td>
+        <td class="us">You Only</td>
+      </tr>
+      <tr>
+        <td>Customer Communication</td>
+        <td class="them">Through Platform</td>
+        <td class="us">Direct via Messenger</td>
+      </tr>
+      <tr>
+        <td>Setup Time</td>
+        <td class="them">Days to Weeks</td>
+        <td class="us">24-48 Hours</td>
+      </tr>
+      <tr>
+        <td>Inventory Control</td>
+        <td class="them">Limited</td>
+        <td class="us">Full Control</td>
+      </tr>
+    </table>
+    <div class="slide-number">7</div>
+  </div>
+
+  <!-- Slide 8: Results -->
+  <div class="slide">
+    <div class="logo-small">AutoPosterPro</div>
+    <h2>Real Dealers. <span class="highlight">Real Results.</span></h2>
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="number">15-24</div>
+        <div class="label">Cars Sold/Month via Marketplace</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">12+</div>
+        <div class="label">Quality Leads per Day</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">90%</div>
+        <div class="label">Time Saved on Posting</div>
+      </div>
+      <div class="stat-box">
+        <div class="number">2x</div>
+        <div class="label">ROI with Automation</div>
+      </div>
+    </div>
+    <p style="margin-top: 30px; text-align: center; font-style: italic;">"We went from posting maybe 10 cars a week to having our entire inventory live 24/7. The leads started flowing immediately."<br><span style="color: #7c3aed;">— Dealer Testimonial</span></p>
+    <div class="slide-number">8</div>
+  </div>
+
+  <!-- Slide 9: Pricing -->
+  <div class="slide">
+    <div class="logo-small">AutoPosterPro</div>
+    <h2>Simple, <span class="highlight">Transparent</span> Pricing</h2>
+    <div class="pricing-row">
+      <div class="price-card">
+        <h4>Starter</h4>
+        <div class="price">$219<span>/mo</span></div>
+        <div class="setup">+ $299 one-time setup</div>
+      </div>
+      <div class="price-card featured">
+        <h4>Professional</h4>
+        <div class="price">$1,199<span>/mo</span></div>
+        <div class="setup">+ $1,000 one-time setup</div>
+      </div>
+      <div class="price-card">
+        <h4>Enterprise</h4>
+        <div class="price">$1,799<span>/mo</span></div>
+        <div class="setup">+ $2,000 one-time setup</div>
+      </div>
+    </div>
+    <p style="text-align: center; font-size: 18px; color: #a1a1aa;">All fees plus applicable local taxes. Annual plans available with discount.</p>
+    <div class="slide-number">9</div>
+  </div>
+
+  <!-- Slide 10: CTA -->
+  <div class="slide slide-cta">
+    <h1>Ready to Reclaim Your Time?</h1>
+    <p style="font-size: 28px; color: rgba(255,255,255,0.9); margin: 30px auto; max-width: 700px;">Join dealerships across North America who are selling more cars with less effort.</p>
+    <a href="mailto:support@autoposterpro.com" class="cta-btn">Let's Talk →</a>
+    <div style="margin-top: 60px;">
+      <p style="font-size: 20px; color: rgba(255,255,255,0.8);">support@autoposterpro.com | autoposterpro.com</p>
+    </div>
+    <div style="position: absolute; bottom: 30px; left: 40px; font-size: 14px; opacity: 0.7;">
+      © 2025 1553048 B.C. Ltd. dba AutoPosterPro
+    </div>
+    <div class="slide-number" style="color: rgba(255,255,255,0.5);">10</div>
+  </div>
+
+</body>
+</html>

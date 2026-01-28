@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
+  <defs>
+    <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#5b21b6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon: Stylized "A" with arrow/speed lines -->
+  <g transform="translate(10, 10)">
+    <!-- Main A shape -->
+    <path d="M30 90 L50 15 L70 90" fill="none" stroke="url(#grad1)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Crossbar -->
+    <path d="M36 65 L64 65" fill="none" stroke="url(#grad1)" stroke-width="6" stroke-linecap="round"/>
+    <!-- Speed lines -->
+    <path d="M15 45 L25 45" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" opacity="0.7"/>
+    <path d="M10 55 L22 55" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+    <path d="M12 65 L20 65" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="100" y="70" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800" fill="#1a1625">
+    Auto<tspan fill="url(#grad1)">Poster</tspan>Pro
+  </text>
+  
+  <!-- Tagline -->
+  <text x="100" y="95" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#6b7280" font-style="italic">
+    Post Smarter. Sell Faster.
+  </text>
+</svg>

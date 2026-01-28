@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Us | AutoPosterPro</title>
+  <style>
+    :root {
+      --purple: #7c3aed;
+      --purple-dark: #6d28d9;
+      --orange: #f97316;
+      --green: #22c55e;
+      --bg: #0f0a1a;
+      --card: #1a1425;
+      --text: #fff;
+      --text-dim: #a1a1aa;
+      --border: #2d2640;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+    }
+    .header {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+      padding: 40px 20px;
+      text-align: center;
+    }
+    .logo { font-size: 28px; font-weight: 800; }
+    .logo span { color: var(--orange); }
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: 42px;
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+    .hero h1 span { color: var(--orange); }
+    .hero p {
+      font-size: 18px;
+      color: var(--text-dim);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+    .section {
+      margin-bottom: 60px;
+    }
+    .section h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: var(--purple);
+    }
+    .section p {
+      color: var(--text-dim);
+      font-size: 16px;
+      margin-bottom: 15px;
+    }
+    .values {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      margin-top: 30px;
+    }
+    .value-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 30px;
+    }
+    .value-icon {
+      font-size: 40px;
+      margin-bottom: 15px;
+    }
+    .value-card h3 {
+      font-size: 18px;
+      margin-bottom: 10px;
+    }
+    .value-card p {
+      font-size: 14px;
+      color: var(--text-dim);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      text-align: center;
+      margin: 40px 0;
+    }
+    .stat h3 {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--purple);
+    }
+    .stat p {
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+    .cta {
+      background: linear-gradient(135deg, var(--purple) 0%, var(--purple-dark) 100%);
+      border-radius: 16px;
+      padding: 40px;
+      text-align: center;
+      margin-top: 40px;
+    }
+    .cta h3 {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+    .cta p {
+      color: rgba(255,255,255,0.8);
+      margin-bottom: 20px;
+    }
+    .cta-btn {
+      display: inline-block;
+      background: var(--orange);
+      color: white;
+      padding: 14px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.2s;
+    }
+    .cta-btn:hover { transform: scale(1.05); }
+    .footer {
+      text-align: center;
+      padding: 40px 20px;
+      border-top: 1px solid var(--border);
+      color: var(--text-dim);
+      font-size: 14px;
+    }
+    .footer a { color: var(--purple); text-decoration: none; margin: 0 10px; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <a href="/" style="text-decoration:none;color:white;">
+      <div class="logo">Auto<span>Poster</span>Pro</div>
+    </a>
+  </div>
+  
+  <div class="hero">
+    <h1>Helping Dealerships <span>Sell More Cars</span></h1>
+    <p>We built AutoPosterPro because we saw salespeople spending hours manually posting vehicles to Facebook Marketplace. There had to be a better way.</p>
+  </div>
+  
+  <div class="container">
+    <div class="section">
+      <h2>Our Story</h2>
+      <p>AutoPosterPro was born from a simple observation: car salespeople are great at selling cars, but they shouldn't have to spend their valuable time copying and pasting vehicle information into Facebook Marketplace over and over again.</p>
+      <p>We partnered with dealerships across Canada to understand their workflow and built a tool that takes the tedious work out of social selling. What used to take 15 minutes per listing now takes seconds.</p>
+      <p>Today, AutoPosterPro helps dealerships from coast to coast reach more buyers, sell more vehicles, and spend more time doing what they do best – building relationships with customers.</p>
+    </div>
+    
+    <div class="section">
+      <h2>Who We Help</h2>
+      <p>AutoPosterPro is built for:</p>
+      <div class="values">
+        <div class="value-card">
+          <div class="value-icon">🚗</div>
+          <h3>Independent Dealers</h3>
+          <p>Small lots looking to compete with the big guys on social media without hiring extra staff.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">👔</div>
+          <h3>Sales Professionals</h3>
+          <p>Individual salespeople who want to build their personal brand and sell more units.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🏢</div>
+          <h3>Dealer Groups</h3>
+          <p>Multi-location operations that need consistent, efficient posting across all stores.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section">
+      <h2>Our Values</h2>
+      <div class="values">
+        <div class="value-card">
+          <div class="value-icon">⚡</div>
+          <h3>Speed</h3>
+          <p>We believe your time is valuable. Every feature we build is designed to save you time.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🛡️</div>
+          <h3>Reliability</h3>
+          <p>Our tools work consistently, so you can focus on selling instead of troubleshooting.</p>
+        </div>
+        <div class="value-card">
+          <div class="value-icon">🤝</div>
+          <h3>Partnership</h3>
+          <p>We succeed when you succeed. Your feedback shapes our product roadmap.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="cta">
+      <h3>Ready to Sell More Cars?</h3>
+      <p>Join dealerships across North America using AutoPosterPro to reach more buyers.</p>
+      <a href="/contact" class="cta-btn">Get Started Today →</a>
+    </div>
+  </div>
+  
+  <div class="footer">
+    <p>© 2026 AutoPosterPro. All rights reserved.</p>
+    <p>
+      <a href="/">Home</a>
+      <a href="/about">About</a>
+      <a href="/privacy">Privacy</a>
+      <a href="/terms">Terms</a>
+      <a href="/contact">Contact</a>
+    </p>
+  </div>
+  <!-- Vinny Chat Widget -->
+  <script src="/js/chat-widget.js"></script>
+</body>
+</html>

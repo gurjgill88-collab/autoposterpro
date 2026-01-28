@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 100">
+  <defs>
+    <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#5b21b6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Main Text -->
+  <text x="10" y="55" font-family="Inter, Arial, sans-serif" font-size="48" font-weight="900" letter-spacing="-2">
+    <tspan fill="#1a1625">AUTO</tspan><tspan fill="url(#grad4)">POSTER</tspan><tspan fill="#1a1625">PRO</tspan>
+  </text>
+  
+  <!-- Accent underline -->
+  <rect x="10" y="65" width="140" height="4" fill="url(#grad4)" rx="2"/>
+  
+  <!-- Tagline -->
+  <text x="10" y="90" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#6b7280" font-style="italic">
+    Post Smarter. Sell Faster.
+  </text>
+</svg>

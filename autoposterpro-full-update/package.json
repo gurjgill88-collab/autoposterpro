@@ -1,0 +1,14 @@
+{
+  "name": "autoposterpro-backend",
+  "version": "2.1.0",
+  "type": "module",
+  "description": "AutoPosterPro License Management, Payments & Email Automation",
+  "scripts": {
+    "dev": "vercel dev"
+  },
+  "dependencies": {
+    "@upstash/redis": "^1.28.0",
+    "stripe": "^14.0.0",
+    "resend": "^2.0.0"
+  }
+}

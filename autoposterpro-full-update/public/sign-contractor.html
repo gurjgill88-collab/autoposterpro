@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Contractor Agreement - AutoPosterPro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1625 0%, #2d1f4e 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    .header {
+      text-align: center;
+      padding: 30px 0;
+    }
+    .header h1 {
+      color: #7c3aed;
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .header p {
+      color: #a1a1aa;
+    }
+    .card {
+      background: #1e1a2e;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+      border: 1px solid #2d2640;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #2d2640;
+    }
+    .card-header h2 {
+      font-size: 20px;
+    }
+    .badge {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .badge-purple { background: #7c3aed; }
+    .badge-green { background: #22c55e; }
+    .badge-orange { background: #f97316; }
+    
+    .agreement-content {
+      background: #fff;
+      color: #1a1625;
+      padding: 40px;
+      border-radius: 8px;
+      max-height: 500px;
+      overflow-y: auto;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .summary-item {
+      background: #2d2640;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .summary-item .label {
+      color: #a1a1aa;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+    .summary-item .value {
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #2d2640;
+      border-radius: 8px;
+      background: #1a1625;
+      color: #fff;
+      font-size: 16px;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #7c3aed;
+    }
+    
+    .signature-canvas {
+      width: 100%;
+      height: 150px;
+      background: #fff;
+      border-radius: 8px;
+      cursor: crosshair;
+    }
+    
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .checkbox-group input {
+      margin-top: 3px;
+      width: 20px;
+      height: 20px;
+    }
+    .checkbox-group label {
+      font-size: 14px;
+      color: #a1a1aa;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: #7c3aed;
+      color: white;
+    }
+    .btn-primary:hover {
+      background: #6d28d9;
+    }
+    .btn-primary:disabled {
+      background: #4c3a6e;
+      cursor: not-allowed;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #7c3aed;
+      color: #7c3aed;
+    }
+    .btn-outline:hover {
+      background: rgba(124, 58, 237, 0.1);
+    }
+    
+    .actions {
+      display: flex;
+      gap: 15px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+    
+    .error-message {
+      background: #fef2f2;
+      border: 1px solid #ef4444;
+      color: #ef4444;
+      padding: 15px;
+      border-radius: 8px;
+      margin: 20px 0;
+    }
+    
+    .success-message {
+      background: #f0fdf4;
+      border: 1px solid #22c55e;
+      color: #22c55e;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .success-message h2 {
+      margin-bottom: 10px;
+    }
+    
+    .loading {
+      text-align: center;
+      padding: 50px;
+      color: #a1a1aa;
+    }
+    
+    @media (max-width: 768px) {
+      .container { padding: 10px; }
+      .card { padding: 20px; }
+      .agreement-content { padding: 20px; max-height: 400px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>AutoPosterPro</h1>
+      <p>Independent Contractor Agreement</p>
+    </div>
+    
+    <div id="loading" class="loading">
+      <p>Loading agreement...</p>
+    </div>
+    
+    <div id="error" style="display: none;"></div>
+    
+    <div id="success" class="card" style="display: none;">
+      <div class="success-message">
+        <h2>✓ Agreement Signed Successfully!</h2>
+        <p>Thank you for signing the Independent Contractor Agreement.</p>
+        <p style="margin-top: 15px; color: #666;">Our team will review and counter-sign the agreement. You will receive a copy of the fully executed agreement via email.</p>
+      </div>
+    </div>
+    
+    <div id="agreement-container" style="display: none;">
+      <!-- Summary -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Agreement Summary</h2>
+          <span class="badge badge-purple" id="status-badge">Pending Signature</span>
+        </div>
+        <div class="summary-grid">
+          <div class="summary-item">
+            <div class="label">Contractor</div>
+            <div class="value" id="contractor-name">-</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">Position</div>
+            <div class="value">Field Sales Contractor</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">Commission Rate</div>
+            <div class="value" id="commission-rate">-</div>
+          </div>
+          <div class="summary-item">
+            <div class="label">Start Date</div>
+            <div class="value" id="start-date">-</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Agreement Content -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Full Agreement</h2>
+          <span style="color: #a1a1aa; font-size: 14px;">Please read carefully before signing</span>
+        </div>
+        <div class="agreement-content" id="agreement-content">
+          Loading...
+        </div>
+      </div>
+      
+      <!-- Signature Section -->
+      <div class="card" id="signature-section">
+        <div class="card-header">
+          <h2>Sign Agreement</h2>
+        </div>
+        
+        <div class="form-group">
+          <label>Your Full Legal Name *</label>
+          <input type="text" class="form-control" id="signer-name" placeholder="Enter your full legal name">
+        </div>
+        
+        <div class="form-group">
+          <label>Signature *</label>
+          <canvas id="signature-canvas" class="signature-canvas"></canvas>
+          <div style="margin-top: 10px;">
+            <button class="btn btn-outline" onclick="clearSignature()" style="padding: 8px 16px; font-size: 14px;">Clear Signature</button>
+            <button class="btn btn-outline" onclick="typeSignature()" style="padding: 8px 16px; font-size: 14px; margin-left: 10px;">Type Instead</button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label>Initials *</label>
+          <input type="text" class="form-control" id="initials" placeholder="Enter your initials" style="max-width: 150px;">
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="agree-terms">
+          <label for="agree-terms">
+            I have read, understand, and agree to be bound by all terms and conditions of this Independent Contractor Agreement, including the confidentiality, non-competition, and non-solicitation provisions. I acknowledge that I am entering into this agreement voluntarily.
+          </label>
+        </div>
+        
+        <div class="checkbox-group">
+          <input type="checkbox" id="agree-contractor">
+          <label for="agree-contractor">
+            I understand and acknowledge that I am being engaged as an INDEPENDENT CONTRACTOR, not an employee, and that I am solely responsible for all taxes, expenses, insurance, and equipment.
+          </label>
+        </div>
+        
+        <div class="actions">
+          <button class="btn btn-primary" onclick="submitSignature()" id="submit-btn">
+            Sign Agreement
+          </button>
+        </div>
+      </div>
+      
+      <!-- Already Signed -->
+      <div class="card" id="already-signed" style="display: none;">
+        <div class="success-message">
+          <h2>✓ Already Signed</h2>
+          <p>You have already signed this agreement on <span id="signed-date"></span>.</p>
+          <p style="margin-top: 10px; color: #666;">Awaiting company counter-signature.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    // Get agreement ID and token from URL
+    const urlParts = window.location.pathname.split('/');
+    const agreementId = urlParts[urlParts.length - 1] || new URLSearchParams(window.location.search).get('id');
+    const token = new URLSearchParams(window.location.search).get('token');
+    
+    let agreement = null;
+    let signatureCanvas, signatureCtx;
+    let isDrawing = false;
+    
+    // Load agreement on page load
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (!agreementId || !token) {
+        showError('Invalid agreement link. Please check the URL.');
+        return;
+      }
+      
+      try {
+        const response = await fetch(`/api/contractor-agreements/sign?id=${agreementId}&token=${token}`);
+        const data = await response.json();
+        
+        if (!response.ok) {
+          showError(data.error || 'Failed to load agreement');
+          return;
+        }
+        
+        agreement = data.agreement;
+        displayAgreement();
+        initSignatureCanvas();
+        
+      } catch (e) {
+        showError('Failed to load agreement. Please try again.');
+        console.error(e);
+      }
+    });
+    
+    function showError(message) {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('error').innerHTML = `<div class="error-message">${message}</div>`;
+      document.getElementById('error').style.display = 'block';
+    }
+    
+    function displayAgreement() {
+      document.getElementById('loading').style.display = 'none';
+      document.getElementById('agreement-container').style.display = 'block';
+      
+      document.getElementById('contractor-name').textContent = agreement.contractorName;
+      document.getElementById('commission-rate').textContent = `${agreement.commissionRate}%`;
+      document.getElementById('start-date').textContent = agreement.startDate;
+      document.getElementById('agreement-content').textContent = agreement.content;
+      
+      // Pre-fill signer name
+      document.getElementById('signer-name').value = agreement.contractorName;
+      
+      // Check if already signed
+      if (agreement.contractorSignedAt) {
+        document.getElementById('signature-section').style.display = 'none';
+        document.getElementById('already-signed').style.display = 'block';
+        document.getElementById('signed-date').textContent = new Date(agreement.contractorSignedAt).toLocaleString();
+        document.getElementById('status-badge').textContent = 'Signed';
+        document.getElementById('status-badge').className = 'badge badge-green';
+      }
+    }
+    
+    function initSignatureCanvas() {
+      signatureCanvas = document.getElementById('signature-canvas');
+      signatureCtx = signatureCanvas.getContext('2d');
+      
+      // Set canvas size
+      const rect = signatureCanvas.getBoundingClientRect();
+      signatureCanvas.width = rect.width;
+      signatureCanvas.height = rect.height;
+      
+      // Set drawing style
+      signatureCtx.strokeStyle = '#1a1625';
+      signatureCtx.lineWidth = 2;
+      signatureCtx.lineCap = 'round';
+      signatureCtx.lineJoin = 'round';
+      
+      // Mouse events
+      signatureCanvas.addEventListener('mousedown', startDrawing);
+      signatureCanvas.addEventListener('mousemove', draw);
+      signatureCanvas.addEventListener('mouseup', stopDrawing);
+      signatureCanvas.addEventListener('mouseout', stopDrawing);
+      
+      // Touch events
+      signatureCanvas.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        startDrawing(e.touches[0]);
+      });
+      signatureCanvas.addEventListener('touchmove', (e) => {
+        e.preventDefault();
+        draw(e.touches[0]);
+      });
+      signatureCanvas.addEventListener('touchend', stopDrawing);
+    }
+    
+    function startDrawing(e) {
+      isDrawing = true;
+      const rect = signatureCanvas.getBoundingClientRect();
+      signatureCtx.beginPath();
+      signatureCtx.moveTo(e.clientX - rect.left, e.clientY - rect.top);
+    }
+    
+    function draw(e) {
+      if (!isDrawing) return;
+      const rect = signatureCanvas.getBoundingClientRect();
+      signatureCtx.lineTo(e.clientX - rect.left, e.clientY - rect.top);
+      signatureCtx.stroke();
+    }
+    
+    function stopDrawing() {
+      isDrawing = false;
+    }
+    
+    function clearSignature() {
+      signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+    }
+    
+    function typeSignature() {
+      const name = document.getElementById('signer-name').value || agreement.contractorName;
+      clearSignature();
+      signatureCtx.font = 'italic 32px "Brush Script MT", cursive';
+      signatureCtx.fillStyle = '#1a1625';
+      signatureCtx.fillText(name, 20, 90);
+    }
+    
+    async function submitSignature() {
+      const signerName = document.getElementById('signer-name').value.trim();
+      const initials = document.getElementById('initials').value.trim();
+      const agreeTerms = document.getElementById('agree-terms').checked;
+      const agreeContractor = document.getElementById('agree-contractor').checked;
+      
+      if (!signerName) {
+        alert('Please enter your full legal name');
+        return;
+      }
+      
+      if (!initials) {
+        alert('Please enter your initials');
+        return;
+      }
+      
+      if (!agreeTerms || !agreeContractor) {
+        alert('Please check both agreement checkboxes to confirm you understand and agree to the terms');
+        return;
+      }
+      
+      // Check if canvas has content
+      const signatureData = signatureCanvas.toDataURL();
+      const blankCanvas = document.createElement('canvas');
+      blankCanvas.width = signatureCanvas.width;
+      blankCanvas.height = signatureCanvas.height;
+      blankCanvas.getContext('2d').fillStyle = '#fff';
+      blankCanvas.getContext('2d').fillRect(0, 0, blankCanvas.width, blankCanvas.height);
+      
+      // Get image data to check if drawn on
+      const imageData = signatureCtx.getImageData(0, 0, signatureCanvas.width, signatureCanvas.height);
+      let hasSignature = false;
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        if (imageData.data[i] !== 255 || imageData.data[i+1] !== 255 || imageData.data[i+2] !== 255) {
+          hasSignature = true;
+          break;
+        }
+      }
+      
+      if (!hasSignature) {
+        alert('Please draw or type your signature');
+        return;
+      }
+      
+      const submitBtn = document.getElementById('submit-btn');
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Submitting...';
+      
+      try {
+        const response = await fetch(`/api/contractor-agreements/sign?id=${agreementId}&token=${token}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            signature: signatureData,
+            signerName,
+            initials,
+            agreedToTerms: true
+          })
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+          alert(data.error || 'Failed to submit signature');
+          submitBtn.disabled = false;
+          submitBtn.textContent = 'Sign Agreement';
+          return;
+        }
+        
+        // Show success
+        document.getElementById('agreement-container').style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+        
+      } catch (e) {
+        alert('Error submitting signature. Please try again.');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Sign Agreement';
+        console.error(e);
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
+  <defs>
+    <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#5b21b6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon: Rounded square with play/post arrow -->
+  <g transform="translate(10, 15)">
+    <rect x="5" y="5" width="70" height="70" rx="16" fill="url(#grad3)"/>
+    <!-- Upload/post arrow -->
+    <path d="M40 25 L40 55" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>
+    <path d="M28 37 L40 25 L52 37" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Base line -->
+    <path d="M25 58 L55 58" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" opacity="0.6"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="100" y="70" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800" fill="#1a1625">
+    Auto<tspan fill="url(#grad3)">Poster</tspan>Pro
+  </text>
+  
+  <!-- Tagline -->
+  <text x="100" y="95" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#6b7280" font-style="italic">
+    Post Smarter. Sell Faster.
+  </text>
+</svg>

@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Careers - AutoPosterPro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1625 0%, #2d1f4e 100%);
+      min-height: 100vh;
+      color: #fff;
+    }
+    nav {
+      padding: 20px 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #7c3aed;
+    }
+    .logo span { color: #fff; }
+    .nav-links {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+    .nav-links a {
+      color: #a1a1aa;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+    .nav-links a:hover { color: #fff; }
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+      color: white;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(124, 58, 237, 0.3);
+    }
+    
+    .hero {
+      text-align: center;
+      padding: 80px 5%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+      background: linear-gradient(135deg, #fff 0%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      font-size: 20px;
+      color: #a1a1aa;
+      margin-bottom: 30px;
+    }
+    
+    .benefits {
+      padding: 60px 5%;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .benefits h2 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+    .benefits-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+    }
+    .benefit-card {
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.2);
+      border-radius: 16px;
+      padding: 30px;
+      text-align: center;
+    }
+    .benefit-card i {
+      font-size: 40px;
+      color: #7c3aed;
+      margin-bottom: 20px;
+    }
+    .benefit-card h3 {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+    .benefit-card p {
+      color: #a1a1aa;
+      font-size: 14px;
+    }
+    
+    .jobs-section {
+      padding: 60px 5%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .jobs-section h2 {
+      text-align: center;
+      font-size: 32px;
+      margin-bottom: 40px;
+    }
+    .job-card {
+      background: #1e1a2e;
+      border: 1px solid #2d2640;
+      border-radius: 16px;
+      padding: 30px;
+      margin-bottom: 20px;
+      transition: all 0.3s;
+    }
+    .job-card:hover {
+      border-color: #7c3aed;
+      transform: translateY(-2px);
+    }
+    .job-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+    }
+    .job-title {
+      font-size: 22px;
+      font-weight: 600;
+    }
+    .job-meta {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+    .job-tag {
+      background: rgba(124, 58, 237, 0.2);
+      color: #a855f7;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+    }
+    .job-description {
+      color: #a1a1aa;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+    .job-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .job-date {
+      color: #71717a;
+      font-size: 13px;
+    }
+    
+    .no-jobs {
+      text-align: center;
+      padding: 60px 20px;
+      color: #71717a;
+    }
+    .no-jobs i {
+      font-size: 60px;
+      margin-bottom: 20px;
+      color: #3f3a52;
+    }
+    
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      background: #1e1a2e;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 20px 30px;
+      border-bottom: 1px solid #2d2640;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-header h3 { font-size: 20px; }
+    .modal-close {
+      background: none;
+      border: none;
+      color: #71717a;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .modal-body { padding: 30px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      background: #1a1625;
+      border: 1px solid #2d2640;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 15px;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: #7c3aed;
+    }
+    textarea.form-control {
+      min-height: 120px;
+      resize: vertical;
+    }
+    
+    footer {
+      text-align: center;
+      padding: 40px 5%;
+      border-top: 1px solid #2d2640;
+      margin-top: 60px;
+    }
+    footer p {
+      color: #71717a;
+      font-size: 14px;
+    }
+    footer a {
+      color: #7c3aed;
+      text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+      .nav-links { display: none; }
+      .hero h1 { font-size: 32px; }
+      .job-header { flex-direction: column; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <div class="logo">Auto<span>PosterPro</span></div>
+    <div class="nav-links">
+      <a href="/">Home</a>
+      <a href="/pricing">Pricing</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <a href="/dashboard" class="btn btn-primary">Dashboard</a>
+    </div>
+  </nav>
+  
+  <section class="hero">
+    <h1>Join the AutoPosterPro Team</h1>
+    <p>Help us transform how automotive dealerships connect with buyers. We're building the future of automotive retail technology.</p>
+  </section>
+  
+  <section class="benefits">
+    <h2>Why Work With Us</h2>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <i class="fas fa-laptop-house"></i>
+        <h3>Remote First</h3>
+        <p>Work from anywhere in Canada or the USA. Flexibility is built into how we operate.</p>
+      </div>
+      <div class="benefit-card">
+        <i class="fas fa-chart-line"></i>
+        <h3>Growth Industry</h3>
+        <p>Automotive retail tech is booming. Be part of a company shaping its future.</p>
+      </div>
+      <div class="benefit-card">
+        <i class="fas fa-users"></i>
+        <h3>Small Team, Big Impact</h3>
+        <p>Your work matters here. Every contribution directly impacts our success.</p>
+      </div>
+      <div class="benefit-card">
+        <i class="fas fa-dollar-sign"></i>
+        <h3>Competitive Compensation</h3>
+        <p>Commission-based opportunities with uncapped earning potential for sales roles.</p>
+      </div>
+    </div>
+  </section>
+  
+  <section class="jobs-section">
+    <h2>Open Positions</h2>
+    <div id="jobsList">
+      <div class="no-jobs">
+        <i class="fas fa-briefcase"></i>
+        <h3>No open positions at this time</h3>
+        <p>Check back soon or send your resume to <a href="mailto:support@autoposterpro.com">support@autoposterpro.com</a></p>
+      </div>
+    </div>
+  </section>
+  
+  <div class="modal" id="applyModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Apply for <span id="applyJobTitle">Position</span></h3>
+        <button class="modal-close" onclick="closeApplyModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="applicationForm">
+          <input type="hidden" id="applyJobId">
+          <div class="form-group">
+            <label>Full Name *</label>
+            <input type="text" class="form-control" id="applicantName" required>
+          </div>
+          <div class="form-group">
+            <label>Email *</label>
+            <input type="email" class="form-control" id="applicantEmail" required>
+          </div>
+          <div class="form-group">
+            <label>Phone</label>
+            <input type="tel" class="form-control" id="applicantPhone">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" class="form-control" id="applicantLocation" placeholder="City, Province/State">
+          </div>
+          <div class="form-group">
+            <label>Why are you interested? *</label>
+            <textarea class="form-control" id="applicantCover" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Relevant Experience</label>
+            <textarea class="form-control" id="applicantExperience"></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Application</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p><strong>1553048 B.C. Ltd dba AutoPosterPro</strong></p>
+    <p style="margin-top: 10px;">
+      <a href="mailto:support@autoposterpro.com">support@autoposterpro.com</a> | 
+      <a href="https://www.autoposterpro.com">www.autoposterpro.com</a>
+    </p>
+    <p style="margin-top: 20px;">&copy; 2024-2025 AutoPosterPro. All rights reserved.</p>
+  </footer>
+  
+  <script>
+    async function loadJobs() {
+      try {
+        const res = await fetch('/api/careers');
+        const data = await res.json();
+        
+        if (data.jobs && data.jobs.length > 0) {
+          const activeJobs = data.jobs.filter(j => j.status === 'active');
+          if (activeJobs.length > 0) {
+            document.getElementById('jobsList').innerHTML = activeJobs.map(job => `
+              <div class="job-card">
+                <div class="job-header">
+                  <div class="job-title">${job.title}</div>
+                </div>
+                <div class="job-meta">
+                  <span class="job-tag"><i class="fas fa-map-marker-alt"></i> ${job.location || 'Remote'}</span>
+                  <span class="job-tag"><i class="fas fa-briefcase"></i> ${job.type || 'Contractor'}</span>
+                  ${job.compensation ? `<span class="job-tag"><i class="fas fa-dollar-sign"></i> ${job.compensation}</span>` : ''}
+                </div>
+                <div class="job-description">${job.shortDescription || ''}</div>
+                <div class="job-footer">
+                  <span class="job-date">Posted ${formatDate(job.createdAt)}</span>
+                  <button class="btn btn-primary" onclick="openApplyModal('${job.id}', '${job.title}')">Apply Now</button>
+                </div>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (e) {
+        console.log('No jobs or error:', e);
+      }
+    }
+    
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const now = new Date();
+      const diff = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+      if (diff === 0) return 'today';
+      if (diff === 1) return 'yesterday';
+      if (diff < 7) return `${diff} days ago`;
+      return date.toLocaleDateString();
+    }
+    
+    function openApplyModal(jobId, jobTitle) {
+      document.getElementById('applyJobId').value = jobId;
+      document.getElementById('applyJobTitle').textContent = jobTitle;
+      document.getElementById('applyModal').classList.add('active');
+    }
+    
+    function closeApplyModal() {
+      document.getElementById('applyModal').classList.remove('active');
+    }
+    
+    document.getElementById('applicationForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const application = {
+        jobId: document.getElementById('applyJobId').value,
+        name: document.getElementById('applicantName').value,
+        email: document.getElementById('applicantEmail').value,
+        phone: document.getElementById('applicantPhone').value,
+        location: document.getElementById('applicantLocation').value,
+        coverLetter: document.getElementById('applicantCover').value,
+        experience: document.getElementById('applicantExperience').value
+      };
+      
+      try {
+        const res = await fetch('/api/careers/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(application)
+        });
+        if (res.ok) {
+          alert('Application submitted! We\'ll be in touch.');
+          closeApplyModal();
+          document.getElementById('applicationForm').reset();
+        } else {
+          throw new Error('Submit failed');
+        }
+      } catch (e) {
+        const subject = encodeURIComponent(`Application: ${document.getElementById('applyJobTitle').textContent}`);
+        const body = encodeURIComponent(`Name: ${application.name}\nEmail: ${application.email}\nPhone: ${application.phone}\nLocation: ${application.location}\n\n${application.coverLetter}\n\nExperience:\n${application.experience}`);
+        window.location.href = `mailto:support@autoposterpro.com?subject=${subject}&body=${body}`;
+      }
+    });
+    
+    document.getElementById('applyModal').addEventListener('click', (e) => {
+      if (e.target.id === 'applyModal') closeApplyModal();
+    });
+    
+    loadJobs();
+  </script>
+</body>
+</html>

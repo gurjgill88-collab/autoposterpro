@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings - AutoPosterPro</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #7c3aed;
+      --orange: #f97316;
+      --green: #22c55e;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --bg: #0f0a1a;
+      --bg-card: #1a1425;
+      --text: #ffffff;
+      --text-dim: #a1a1aa;
+      --border: #2d2640;
+    }
+    
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 40px 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-dim);
+      text-decoration: none;
+      margin-bottom: 20px;
+    }
+    
+    .nav-back:hover { color: var(--text); }
+    
+    .header {
+      margin-bottom: 40px;
+    }
+    
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+    
+    .header p {
+      color: var(--text-dim);
+    }
+    
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+    
+    .card-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .card-header h2 {
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .card-body {
+      padding: 20px;
+    }
+    
+    .integration {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    
+    .integration:last-child { margin-bottom: 0; }
+    
+    .integration-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .integration-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .integration-icon.stripe { background: #635bff; }
+    .integration-icon.resend { background: #000; }
+    .integration-icon.upstash { background: #00e9a3; color: #000; }
+    
+    .integration-text h4 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    
+    .integration-text p {
+      font-size: 13px;
+      color: var(--text-dim);
+    }
+    
+    .badge {
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    
+    .badge-green { background: rgba(34, 197, 94, 0.2); color: var(--green); }
+    .badge-red { background: rgba(239, 68, 68, 0.2); color: var(--red); }
+    .badge-orange { background: rgba(249, 115, 22, 0.2); color: var(--orange); }
+    
+    .btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-sm { padding: 8px 14px; font-size: 13px; }
+    
+    .setup-steps {
+      padding: 20px;
+      background: var(--bg);
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+    
+    .setup-steps h4 {
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+    
+    .setup-steps ol {
+      padding-left: 20px;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+    
+    .setup-steps li {
+      margin-bottom: 8px;
+    }
+    
+    .setup-steps code {
+      background: var(--bg-card);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+    }
+    
+    .env-vars {
+      background: var(--bg);
+      padding: 16px;
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+    
+    .env-var {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .env-var:last-child { border-bottom: none; }
+    
+    .env-var code {
+      background: var(--bg-card);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 13px;
+    }
+    
+    .env-status {
+      font-size: 12px;
+    }
+    
+    .env-status.set { color: var(--green); }
+    .env-status.missing { color: var(--red); }
+    
+    .form-group {
+      margin-bottom: 16px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+    
+    .form-control {
+      width: 100%;
+      padding: 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 14px;
+    }
+    
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+    
+    .action-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <a href="/dashboard" class="nav-back">
+      <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+    
+    <div class="header">
+      <h1>Settings</h1>
+      <p>Manage integrations and configuration</p>
+    </div>
+    
+    <!-- Integrations -->
+    <div class="card">
+      <div class="card-header">
+        <h2><i class="fas fa-plug"></i> Integrations</h2>
+      </div>
+      <div class="card-body">
+        <div class="integration">
+          <div class="integration-info">
+            <div class="integration-icon stripe">
+              <i class="fab fa-stripe-s"></i>
+            </div>
+            <div class="integration-text">
+              <h4>Stripe</h4>
+              <p>Payment processing and subscriptions</p>
+            </div>
+          </div>
+          <span class="badge badge-orange" id="stripeStatus">Not Connected</span>
+        </div>
+        
+        <div class="integration">
+          <div class="integration-info">
+            <div class="integration-icon resend">
+              <i class="fas fa-envelope"></i>
+            </div>
+            <div class="integration-text">
+              <h4>Resend</h4>
+              <p>Transactional email delivery</p>
+            </div>
+          </div>
+          <span class="badge badge-orange" id="resendStatus">Not Connected</span>
+        </div>
+        
+        <div class="integration">
+          <div class="integration-info">
+            <div class="integration-icon upstash">
+              <i class="fas fa-database"></i>
+            </div>
+            <div class="integration-text">
+              <h4>Upstash Redis</h4>
+              <p>Database and KV storage</p>
+            </div>
+          </div>
+          <span class="badge badge-green" id="upstashStatus">Connected</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Stripe Setup -->
+    <div class="card">
+      <div class="card-header">
+        <h2><i class="fab fa-stripe"></i> Stripe Setup</h2>
+      </div>
+      <div class="card-body">
+        <div class="setup-steps">
+          <h4>Setup Instructions:</h4>
+          <ol>
+            <li>Go to <a href="https://dashboard.stripe.com" target="_blank" style="color: var(--primary);">Stripe Dashboard</a></li>
+            <li>Create two products:
+              <ul style="margin-top: 8px;">
+                <li><strong>Monthly</strong>: $99/month recurring</li>
+                <li><strong>Annual</strong>: $948/year recurring</li>
+              </ul>
+            </li>
+            <li>Get your API keys from Developers → API keys</li>
+            <li>Set up webhook at Developers → Webhooks
+              <ul style="margin-top: 8px;">
+                <li>Endpoint: <code>https://autoposterpro.com/api/stripe/webhook</code></li>
+                <li>Events: <code>checkout.session.completed</code>, <code>customer.subscription.*</code>, <code>invoice.*</code></li>
+              </ul>
+            </li>
+            <li>Add environment variables to Vercel</li>
+          </ol>
+        </div>
+        
+        <div class="env-vars">
+          <h4 style="margin-bottom: 12px; font-size: 14px;">Required Environment Variables:</h4>
+          <div class="env-var">
+            <code>STRIPE_SECRET_KEY</code>
+            <span class="env-status missing">Not set</span>
+          </div>
+          <div class="env-var">
+            <code>STRIPE_PUBLISHABLE_KEY</code>
+            <span class="env-status missing">Not set</span>
+          </div>
+          <div class="env-var">
+            <code>STRIPE_WEBHOOK_SECRET</code>
+            <span class="env-status missing">Not set</span>
+          </div>
+          <div class="env-var">
+            <code>STRIPE_MONTHLY_PRICE_ID</code>
+            <span class="env-status missing">Not set</span>
+          </div>
+          <div class="env-var">
+            <code>STRIPE_ANNUAL_PRICE_ID</code>
+            <span class="env-status missing">Not set</span>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <a href="https://dashboard.stripe.com" target="_blank" class="btn btn-primary">
+            <i class="fab fa-stripe"></i> Open Stripe Dashboard
+          </a>
+          <a href="https://vercel.com/dashboard" target="_blank" class="btn btn-outline">
+            Add to Vercel
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Resend Setup -->
+    <div class="card">
+      <div class="card-header">
+        <h2><i class="fas fa-envelope"></i> Resend Setup</h2>
+      </div>
+      <div class="card-body">
+        <div class="setup-steps">
+          <h4>Setup Instructions:</h4>
+          <ol>
+            <li>Go to <a href="https://resend.com" target="_blank" style="color: var(--primary);">Resend.com</a> and create an account</li>
+            <li>Add your domain and verify DNS records</li>
+            <li>Create an API key</li>
+            <li>Add the API key to Vercel environment variables</li>
+          </ol>
+        </div>
+        
+        <div class="env-vars">
+          <h4 style="margin-bottom: 12px; font-size: 14px;">Required Environment Variables:</h4>
+          <div class="env-var">
+            <code>RESEND_API_KEY</code>
+            <span class="env-status missing">Not set</span>
+          </div>
+        </div>
+        
+        <div class="action-buttons">
+          <a href="https://resend.com/api-keys" target="_blank" class="btn btn-primary">
+            <i class="fas fa-key"></i> Get Resend API Key
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Seed Data -->
+    <div class="card">
+      <div class="card-header">
+        <h2><i class="fas fa-database"></i> Seed Data</h2>
+      </div>
+      <div class="card-body">
+        <p style="color: var(--text-dim); margin-bottom: 16px;">
+          Initialize your database with default email templates and sample data.
+        </p>
+        
+        <div class="action-buttons">
+          <button class="btn btn-primary" onclick="seedTemplates()">
+            <i class="fas fa-file-alt"></i> Seed Email Templates
+          </button>
+          <button class="btn btn-outline" onclick="clearData()" style="color: var(--red);">
+            <i class="fas fa-trash"></i> Clear All Data
+          </button>
+        </div>
+        
+        <div id="seedResult" style="margin-top: 16px; padding: 12px; background: var(--bg); border-radius: 8px; display: none;"></div>
+      </div>
+    </div>
+    
+    <!-- API Info -->
+    <div class="card">
+      <div class="card-header">
+        <h2><i class="fas fa-code"></i> API Endpoints</h2>
+      </div>
+      <div class="card-body">
+        <div style="background: var(--bg); padding: 16px; border-radius: 8px; font-family: monospace; font-size: 13px; overflow-x: auto;">
+          <p style="color: var(--text-dim); margin-bottom: 12px;">Base URL: <code>https://autoposterpro.com</code></p>
+          
+          <p><span style="color: var(--green);">POST</span> /api/validate-license - Validate license key</p>
+          <p><span style="color: var(--blue);">GET</span> /api/admin/licenses - List licenses</p>
+          <p><span style="color: var(--green);">POST</span> /api/admin/licenses - Create license</p>
+          <p><span style="color: var(--red);">DELETE</span> /api/admin/licenses - Deactivate license</p>
+          <p><span style="color: var(--green);">POST</span> /api/usage - Track extension usage</p>
+          <p><span style="color: var(--blue);">GET</span> /api/usage - Get usage stats</p>
+          <p><span style="color: var(--blue);">GET</span> /api/reports?report=dashboard - Dashboard data</p>
+          <p><span style="color: var(--blue);">GET</span> /api/reports?report=mrr - MRR report</p>
+          <p><span style="color: var(--blue);">GET</span> /api/transactions - Billing history</p>
+          <p><span style="color: var(--green);">POST</span> /api/crm/send-email - Send email</p>
+          <p><span style="color: var(--blue);">GET</span> /api/crm/templates - Email templates</p>
+          <p><span style="color: var(--green);">POST</span> /api/agreements - Create agreement</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    const authToken = localStorage.getItem('authToken') || '';
+    
+    async function seedTemplates() {
+      const resultDiv = document.getElementById('seedResult');
+      resultDiv.style.display = 'block';
+      resultDiv.innerHTML = '<span style="color: var(--text-dim);">Seeding templates...</span>';
+      
+      try {
+        const res = await fetch('/api/seed-templates', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: JSON.stringify({ force: false })
+        });
+        
+        const data = await res.json();
+        
+        if (data.success) {
+          resultDiv.innerHTML = `<span style="color: var(--green);">✓ ${data.message}</span>`;
+        } else {
+          resultDiv.innerHTML = `<span style="color: var(--orange);">${data.message}</span>`;
+        }
+      } catch (e) {
+        resultDiv.innerHTML = `<span style="color: var(--red);">Error: ${e.message}</span>`;
+      }
+    }
+    
+    function clearData() {
+      if (!confirm('Are you sure? This will delete ALL data including licenses, deals, and templates.')) {
+        return;
+      }
+      if (!confirm('This cannot be undone. Are you ABSOLUTELY sure?')) {
+        return;
+      }
+      alert('Data clearing not implemented for safety. Contact support.');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120">
+  <defs>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#5b21b6"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Icon: Car silhouette with check badge -->
+  <g transform="translate(8, 20)">
+    <!-- Car body -->
+    <path d="M10 60 L15 45 L25 35 L55 35 L65 45 L75 45 L78 55 L78 65 L10 65 Z" fill="url(#grad2)"/>
+    <!-- Windows -->
+    <path d="M27 40 L32 45 L52 45 L57 40 Z" fill="#1a1625" opacity="0.4"/>
+    <!-- Wheels -->
+    <circle cx="25" cy="65" r="10" fill="#1a1625"/>
+    <circle cx="25" cy="65" r="6" fill="#fff"/>
+    <circle cx="63" cy="65" r="10" fill="#1a1625"/>
+    <circle cx="63" cy="65" r="6" fill="#fff"/>
+    <!-- Check badge -->
+    <circle cx="70" cy="30" r="14" fill="#22c55e"/>
+    <path d="M63 30 L68 35 L77 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="100" y="70" font-family="Inter, Arial, sans-serif" font-size="42" font-weight="800" fill="#1a1625">
+    Auto<tspan fill="url(#grad2)">Poster</tspan>Pro
+  </text>
+  
+  <!-- Tagline -->
+  <text x="100" y="95" font-family="Inter, Arial, sans-serif" font-size="14" font-weight="500" fill="#6b7280" font-style="italic">
+    Post Smarter. Sell Faster.
+  </text>
+</svg>
