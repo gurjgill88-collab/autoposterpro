@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AutoPosterPro | Post to Facebook Marketplace 10x Faster</title>
   <meta name="description" content="AI-powered Chrome extension that helps car dealers post to Facebook Marketplace in seconds. Save hours every day with automated listings.">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <style>
     :root {
       --purple: #7c3aed;
@@ -41,12 +43,15 @@
       border-bottom: 1px solid var(--border);
     }
     .nav-logo {
-      font-size: 24px;
-      font-weight: 800;
+      display: flex;
+      align-items: center;
       text-decoration: none;
-      color: var(--text);
+      height: 36px;
     }
-    .nav-logo span { color: var(--orange); }
+    .nav-logo svg {
+      height: 36px;
+      width: auto;
+    }
     .nav-links {
       display: flex;
       gap: 30px;
@@ -395,11 +400,13 @@
       .footer-content { grid-template-columns: 1fr; }
     }
     .footer-brand .logo {
-      font-size: 24px;
-      font-weight: 800;
       margin-bottom: 15px;
+      height: 32px;
     }
-    .footer-brand .logo span { color: var(--orange); }
+    .footer-brand .logo svg {
+      height: 32px;
+      width: auto;
+    }
     .footer-brand p {
       color: var(--text-dim);
       font-size: 14px;
@@ -442,7 +449,20 @@
 <body>
   <!-- Navigation -->
   <nav class="nav">
-    <a href="/" class="nav-logo">Auto<span>Poster</span>Pro</a>
+    <a href="/" class="nav-logo">
+      <svg viewBox="0 0 280 60" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="navGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#22d3ee"/>
+            <stop offset="100%" style="stop-color:#a855f7"/>
+          </linearGradient>
+        </defs>
+        <text x="0" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="500" font-size="32" fill="white" letter-spacing="-1">auto</text>
+        <text x="72" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="700" font-size="32" fill="url(#navGrad)" letter-spacing="-1">poster</text>
+        <text x="175" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="500" font-size="32" fill="white" letter-spacing="-1">pro</text>
+        <rect x="72" y="48" width="100" height="3" rx="1.5" fill="url(#navGrad)"/>
+      </svg>
+    </a>
     <div class="nav-links">
       <a href="#features">Features</a>
       <a href="#how-it-works">How It Works</a>
@@ -630,7 +650,20 @@
   <footer class="footer">
     <div class="footer-content">
       <div class="footer-brand">
-        <div class="logo">Auto<span>Poster</span>Pro</div>
+        <div class="logo">
+          <svg viewBox="0 0 280 60" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="footerGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#22d3ee"/>
+                <stop offset="100%" style="stop-color:#a855f7"/>
+              </linearGradient>
+            </defs>
+            <text x="0" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="500" font-size="32" fill="white" letter-spacing="-1">auto</text>
+            <text x="72" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="700" font-size="32" fill="url(#footerGrad)" letter-spacing="-1">poster</text>
+            <text x="175" y="42" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif" font-weight="500" font-size="32" fill="white" letter-spacing="-1">pro</text>
+            <rect x="72" y="48" width="100" height="3" rx="1.5" fill="url(#footerGrad)"/>
+          </svg>
+        </div>
         <p>AI-powered Facebook Marketplace automation for car dealerships. Post faster, sell more.</p>
       </div>
       
