@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutoPosterPro - Sales Deck</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #1a1625;
+      color: #fff;
+    }
+    
+    .slide {
+      width: 100%;
+      min-height: 100vh;
+      padding: 60px 80px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      background: linear-gradient(135deg, #1a1625 0%, #2d1f4e 100%);
+    }
+    
+    .slide-number {
+      position: absolute;
+      bottom: 30px;
+      right: 40px;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .logo-small {
+      position: absolute;
+      top: 30px;
+      left: 40px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .logo-small span { color: #7c3aed; }
+    
+    h1 {
+      font-size: 56px;
+      font-weight: 800;
+      margin-bottom: 30px;
+      line-height: 1.2;
+    }
+    h1 span { color: #7c3aed; }
+    
+    h2 {
+      font-size: 42px;
+      font-weight: 700;
+      margin-bottom: 40px;
+    }
+    h2 span { color: #7c3aed; }
+    
+    h3 {
+      font-size: 28px;
+      color: #7c3aed;
+      margin-bottom: 20px;
+    }
+    
+    p {
+      font-size: 24px;
+      color: #d1d5db;
+      max-width: 900px;
+    }
+    
+    .subtitle {
+      font-size: 28px;
+      color: #a78bfa;
+      margin-bottom: 20px;
+    }
+    
+    /* Title Slide */
+    .title-slide {
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+    }
+    .title-slide h1 {
+      font-size: 72px;
+    }
+    .tagline {
+      font-size: 32px;
+      color: #a1a1aa;
+      margin-top: 20px;
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      margin-top: 40px;
+    }
+    .stat {
+      text-align: center;
+      padding: 40px;
+      background: rgba(124, 58, 237, 0.1);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 16px;
+    }
+    .stat .number {
+      font-size: 64px;
+      font-weight: 800;
+      color: #7c3aed;
+    }
+    .stat .label {
+      font-size: 18px;
+      color: #a1a1aa;
+      margin-top: 10px;
+    }
+    
+    /* Problem Points */
+    .problem-list {
+      list-style: none;
+      margin-top: 30px;
+    }
+    .problem-list li {
+      font-size: 26px;
+      padding: 20px 0;
+      padding-left: 50px;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .problem-list li::before {
+      content: "✗";
+      position: absolute;
+      left: 0;
+      color: #ef4444;
+      font-size: 28px;
+    }
+    
+    /* Solution Points */
+    .solution-list {
+      list-style: none;
+      margin-top: 30px;
+    }
+    .solution-list li {
+      font-size: 26px;
+      padding: 20px 0;
+      padding-left: 50px;
+      position: relative;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .solution-list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #22c55e;
+      font-size: 28px;
+    }
+    
+    /* Comparison */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 40px;
+      font-size: 20px;
+    }
+    .comparison-table th,
+    .comparison-table td {
+      padding: 20px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .comparison-table th {
+      color: #7c3aed;
+      font-weight: 600;
+    }
+    .comparison-table .highlight-row {
+      background: rgba(34, 197, 94, 0.1);
+    }
+    .comparison-table .highlight-row td {
+      color: #22c55e;
+      font-weight: 600;
+    }
+    
+    /* ROI Box */
+    .roi-highlight {
+      background: linear-gradient(135deg, #7c3aed, #a78bfa);
+      border-radius: 20px;
+      padding: 50px;
+      text-align: center;
+      margin-top: 40px;
+    }
+    .roi-highlight .big-number {
+      font-size: 100px;
+      font-weight: 800;
+    }
+    .roi-highlight .description {
+      font-size: 24px;
+      margin-top: 15px;
+    }
+    
+    /* Two Column */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      margin-top: 40px;
+    }
+    
+    /* CTA Slide */
+    .cta-slide {
+      text-align: center;
+      align-items: center;
+    }
+    .cta-button {
+      display: inline-block;
+      background: #7c3aed;
+      color: #fff;
+      padding: 20px 60px;
+      border-radius: 12px;
+      font-size: 24px;
+      font-weight: 700;
+      text-decoration: none;
+      margin-top: 40px;
+    }
+    .contact-info {
+      margin-top: 40px;
+      font-size: 20px;
+      color: #a1a1aa;
+    }
+    .contact-info a {
+      color: #7c3aed;
+      text-decoration: none;
+    }
+    
+    /* Print Styles */
+    @media print {
+      .slide {
+        page-break-after: always;
+        min-height: auto;
+        height: 100vh;
+      }
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- SLIDE 1: Title -->
+  <div class="slide title-slide">
+    <h1>Auto<span>Poster</span>Pro</h1>
+    <p class="tagline">Your Inventory. Every Platform. Zero Effort.</p>
+    <p style="font-size: 18px; margin-top: 60px; color: #666;">Sales Presentation</p>
+    <div class="slide-number">1</div>
+  </div>
+  
+  <!-- SLIDE 2: The Problem -->
+  <div class="slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>The <span>Problem</span></h2>
+    <p>Dealership salespeople spend hours every day on manual tasks that don't sell cars.</p>
+    <ul class="problem-list">
+      <li>Posting cars to Facebook Marketplace takes 2-4 hours daily</li>
+      <li>Salespeople start posting, get interrupted, never finish</li>
+      <li>Listings go stale after 3 days — need constant refreshing</li>
+      <li>$5,000+/month on platforms that share your leads with competitors</li>
+      <li>Time spent posting = time NOT spent closing deals</li>
+    </ul>
+    <div class="slide-number">2</div>
+  </div>
+  
+  <!-- SLIDE 3: Facebook Marketplace Opportunity -->
+  <div class="slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>The <span>Opportunity</span></h2>
+    <p>Facebook Marketplace is the largest source of free, high-intent car buyer leads.</p>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="number">1.1B</div>
+        <div class="label">Monthly Active Marketplace Users</div>
+      </div>
+      <div class="stat">
+        <div class="number">37%</div>
+        <div class="label">Car Buyers Use Facebook in Research</div>
+      </div>
+      <div class="stat">
+        <div class="number">$0</div>
+        <div class="label">Cost Per Lead on Marketplace</div>
+      </div>
+    </div>
+    <div class="slide-number">3</div>
+  </div>
+  
+  <!-- SLIDE 4: The Solution -->
+  <div class="slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>The <span>Solution</span></h2>
+    <p>AutoPosterPro automates your Facebook Marketplace presence completely.</p>
+    <ul class="solution-list">
+      <li>Chrome extension scrapes your entire inventory in seconds</li>
+      <li>Automatically posts vehicles with optimal timing</li>
+      <li>Smart scheduling for Facebook algorithm compliance</li>
+      <li>Auto-refreshes listings every 3 days for maximum visibility</li>
+      <li>Direct Messenger leads — 100% exclusive to your dealership</li>
+    </ul>
+    <div class="slide-number">4</div>
+  </div>
+  
+  <!-- SLIDE 5: Time Savings -->
+  <div class="slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>Save <span>90%</span> of Your Time</h2>
+    <div class="two-col">
+      <div>
+        <h3>Without AutoPosterPro</h3>
+        <ul class="problem-list">
+          <li>2-4 hours/day posting manually</li>
+          <li>Constant interruptions</li>
+          <li>Incomplete inventory posted</li>
+          <li>Stale listings hurt visibility</li>
+          <li>Salespeople frustrated & distracted</li>
+        </ul>
+      </div>
+      <div>
+        <h3>With AutoPosterPro</h3>
+        <ul class="solution-list">
+          <li>Minutes per week</li>
+          <li>Set it and forget it</li>
+          <li>Full inventory coverage</li>
+          <li>Always fresh listings</li>
+          <li>Salespeople focused on selling</li>
+        </ul>
+      </div>
+    </div>
+    <div class="slide-number">5</div>
+  </div>
+  
+  <!-- SLIDE 6: Cost Comparison -->
+  <div class="slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>Cost <span>Comparison</span></h2>
+    <table class="comparison-table">
+      <tr>
+        <th>Platform</th>
+        <th>Monthly Cost</th>
+        <th>Leads Shared?</th>
+        <th>Your Time</th>
+      </tr>
+      <tr>
+        <td>Cars.com / AutoTrader</td>
+        <td>$1,200 - $5,000+</td>
+        <td>Yes</td>
+        <td>High</td>
+      </tr>
+      <tr>
+        <td>CarGurus</td>
+        <td>$500 - $3,000+</td>
+        <td>Yes</td>
+        <td>Medium</td>
+      </tr>
+      <tr>
+        <td>Manual FB Posting</td>
+        <td>Free</td>
+        <td>No</td>
+        <td>2-4 hrs/day</td>
+      </tr>
+      <tr class="highlight-row">
+        <td>AutoPosterPro</td>
+        <td>From $219/mo</td>
+        <td>NO — 100% Exclusive</td>
+        <td>Minutes/week</td>
+      </tr>
+    </table>
+    <div class="slide-number">6</div>
+  </div>
+  
+  <!-- SLIDE 7: Results -->
+  <div class="slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>Real <span>Results</span></h2>
+    <p>Dealerships using optimized Facebook Marketplace strategies report:</p>
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="number">15-24</div>
+        <div class="label">Cars Sold Per Month via FB Marketplace</div>
+      </div>
+      <div class="stat">
+        <div class="number">12+</div>
+        <div class="label">Quality Leads Per Day Possible</div>
+      </div>
+      <div class="stat">
+        <div class="number">∞</div>
+        <div class="label">ROI on Free Marketplace Leads</div>
+      </div>
+    </div>
+    <p style="margin-top: 40px; font-size: 18px; color: #a1a1aa;">*Based on documented dealer results from DealerRefresh community</p>
+    <div class="slide-number">7</div>
+  </div>
+  
+  <!-- SLIDE 8: Pricing -->
+  <div class="slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>Simple <span>Pricing</span></h2>
+    <div class="stats-grid" style="margin-top: 60px;">
+      <div class="stat" style="padding: 50px;">
+        <div class="label" style="margin-bottom: 20px;">STARTER</div>
+        <div class="number">$219</div>
+        <div class="label">/month</div>
+        <p style="font-size: 16px; color: #888; margin-top: 20px;">Perfect for single location</p>
+      </div>
+      <div class="stat" style="padding: 50px; border-color: #7c3aed;">
+        <div class="label" style="margin-bottom: 20px; color: #7c3aed;">PROFESSIONAL</div>
+        <div class="number">$1,199</div>
+        <div class="label">/month</div>
+        <p style="font-size: 16px; color: #888; margin-top: 20px;">Multi-location dealerships</p>
+      </div>
+      <div class="stat" style="padding: 50px;">
+        <div class="label" style="margin-bottom: 20px;">ENTERPRISE</div>
+        <div class="number">$1,799</div>
+        <div class="label">/month</div>
+        <p style="font-size: 16px; color: #888; margin-top: 20px;">Dealer groups & custom</p>
+      </div>
+    </div>
+    <p style="text-align: center; margin-top: 40px; color: #a1a1aa;">All plans include setup, training, and dedicated support</p>
+    <div class="slide-number">8</div>
+  </div>
+  
+  <!-- SLIDE 9: ROI -->
+  <div class="slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>The <span>Math</span></h2>
+    <div class="roi-highlight">
+      <div class="big-number">1 Car</div>
+      <div class="description">Just ONE additional sale per month covers your entire subscription cost — and then some.</div>
+    </div>
+    <p style="margin-top: 40px; text-align: center;">Everything else is pure profit. Most dealers see 5-10+ additional sales within the first 90 days.</p>
+    <div class="slide-number">9</div>
+  </div>
+  
+  <!-- SLIDE 10: CTA -->
+  <div class="slide cta-slide">
+    <div class="logo-small">Auto<span>Poster</span>Pro</div>
+    <h2>Ready to <span>Sell More Cars</span> with Less Effort?</h2>
+    <p style="text-align: center;">Let your salespeople do what they do best — close deals. We'll handle the posting.</p>
+    <a href="https://autoposterpro.com" class="cta-button">Schedule a Demo →</a>
+    <div class="contact-info">
+      <p><a href="mailto:support@autoposterpro.com">support@autoposterpro.com</a></p>
+      <p style="margin-top: 10px;"><a href="https://autoposterpro.com">autoposterpro.com</a></p>
+      <p style="margin-top: 30px; font-size: 16px;">1553048 B.C. Ltd. dba AutoPosterPro</p>
+    </div>
+    <div class="slide-number">10</div>
+  </div>
+  
+</body>
+</html>

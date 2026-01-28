@@ -1,0 +1,17 @@
+<svg viewBox="0 0 320 80" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#6d28d9"/>
+      <stop offset="100%" style="stop-color:#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <!-- Icon: Square with play/forward arrow -->
+  <rect x="5" y="15" width="50" height="50" rx="8" fill="url(#grad2)"/>
+  <polygon points="22,28 42,40 22,52" fill="white"/>
+  <!-- Text -->
+  <text x="65" y="50" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="800" fill="#1a1625">AUTO</text>
+  <text x="145" y="50" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="800" fill="#7c3aed">POSTER</text>
+  <text x="268" y="50" font-family="Inter, Arial, sans-serif" font-size="32" font-weight="800" fill="#1a1625">PRO</text>
+  <!-- Tagline -->
+  <text x="65" y="70" font-family="Inter, Arial, sans-serif" font-size="9" letter-spacing="2" fill="#888">YOUR INVENTORY. EVERY PLATFORM. ZERO EFFORT.</text>
+</svg>
